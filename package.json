@@ -1,0 +1,27 @@
+{
+  "name": "gwn-buena-case-study",
+  "author": "gwn <dev@gwn.wtf>",
+  "version": "0.1.0",
+  "scripts": {
+    "dev:be": "node backend/index.js",
+    "dev:fe": "cd webcli && vite",
+    "dev": "npm run dev:be & npm run dev:fe"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "@fastify/multipart": "^8.3.0",
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.3",
+    "massive": "^6.10.2",
+    "@google/generative-ai": "^0.17.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@radix-ui/react-select": "^2.1.2",
+    "@radix-ui/react-label": "^2.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "vite": "^5.4.10"
+  }
+}
