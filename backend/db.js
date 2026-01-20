@@ -1,15 +1,14 @@
-const massive = require('massive');
-require('dotenv').config();
+const
+    massive = require('massive'),
+    {DATABASE_URL} = process.env
 
-const connectionString = process.env.DATABASE_URL;
 
-let dbInstance;
+let dbInstance
 
-async function connectDb() {
-  if (!dbInstance) {
-    dbInstance = await massive(connectionString, { scripts: false });
-  }
-  return dbInstance;
+const getDB = async () =>
+    dbInstance || (dbInstance = await massive(DATABASE_URL))
+
+
+module.exports = {
+    getDB,
 }
-
-module.exports = { connectDb };
