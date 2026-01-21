@@ -20,9 +20,10 @@ module.exports = {
         const
             db = await getDB(),
 
-            [props, blds, units, pms, accs] =
+            [props, dfiles, blds, units, pms, accs] =
                 await Promise.all([
                     db.properties.find(),
+                    db.declaration_files.find(),
                     db.buildings.find(),
                     db.units.find(),
                     db.property_managers.find(),
@@ -31,11 +32,12 @@ module.exports = {
 
             pmsById = keyBy(pms, p => p.id),
             accsById = keyBy(accs, a => a.id),
+            dfilesByPropId = keyBy(dfiles, f => f.property_id),
             bldsByPropId = groupBy(blds, b => b.property_id),
             unitsByBldId = groupBy(units, u => u.building_id)
 
         props.forEach(p => {
-            p.declaration_file = p.declaration_file.toString('base64')
+            p.declaration_file = dfilesByPropId[p.id].content.toString('base64')
 
             p.property_manager = pmsById[p.property_manager_id]
             p.accountant = accsById[p.accountant_id]

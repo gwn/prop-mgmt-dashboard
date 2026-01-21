@@ -18,7 +18,7 @@ const
             number: {type: 'string'},
             type: {
                 type: 'string',
-                enum: ['Apartment', 'Office', 'Garden', 'Parking'],
+                enum: ['apartment', 'office', 'garden', 'parking'],
             },
             floor: {type: 'string'},
             entrance: {type: 'string'},
@@ -52,21 +52,20 @@ const
     PropertySchema = {
         type: 'object',
         required: [
-            'name', 'unique_number', 'management_type', 'total_mea',
+            'name', 'unique_number', 'management_type',
             'property_manager', 'accountant', 'buildings', 'declaration_file',
         ],
         properties: {
             id: {type: 'integer'},
             name: {type: 'string'},
             unique_number: {type: 'string'},
-            management_type: {type: 'string', enum: ['WEG', 'MV']},
+            management_type: {type: 'string', enum: ['weg', 'mv']},
             total_mea: {type: 'number'},
             property_manager: ManagerSchema,
             accountant: ManagerSchema,
             buildings: {type: 'array', items: BuildingSchema},
             declaration_file: {
                 type: 'string',
-                format: 'byte',
                 contentEncoding: 'base64',
                 contentMediaType: 'application/pdf',
             },

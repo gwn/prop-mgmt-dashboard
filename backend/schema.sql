@@ -8,18 +8,14 @@ create type unit_type as enum ('apartment', 'office', 'garden', 'parking');
 create table property_managers (
     id      serial primary key,
     name    text not null,
-    address text,
-
-    unique (name, address)
+    address text
 );
 
 
 create table accountants (
     id      serial primary key,
     name    text not null,
-    address text,
-
-    unique (name, address)
+    address text
 );
 
 
@@ -28,10 +24,15 @@ create table properties (
     name                text not null,
     unique_number       text unique,
     management_type     management_type not null,
-    declaration_file    bytea,
     total_mea           numeric,
     property_manager_id int references property_managers(id),
     accountant_id       int references accountants(id)
+);
+
+
+create table declaration_files (
+    property_id int primary key references properties(id) on update cascade on delete cascade,
+    content bytea not null
 );
 
 

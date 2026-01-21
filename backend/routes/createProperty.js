@@ -20,32 +20,45 @@ module.exports = {
 
     handler: async (req, rep) => {
         const
-            db = await getDB(),
-
             prop = req.body,
 
-            pm =
-                await db.property_managers.insert(req.body.property_manager, {
-                    onConflict: {
-                        targetExpr: 'name || address',
-                        action: 'ignore',
-                    },
-                }),
+            db = await getDB(),
 
-            acc =
-                await db.accountants.insert(req.body.accountant, {
-                    onConflict: {
-                        targetExpr: 'name || address',
-                        action: 'ignore',
-                    },
-                })
+            [pm, acc] =
+                await Promise.all([
+                    db.property_managers.save(prop.property_manager),
+                    db.accountants.save(prop.accountant),
+                ])
+
+        delete prop.property_manager
+        delete prop.accountant
 
         prop.property_manager_id = pm.id
         prop.accountant_id = acc.id
-        prop.declaration_file = Buffer.from(prop.declaration_file, 'base64')
 
-        const {id} = await db.properties.insert(req.body, {deepInsert: true})
+        const newPropId =
+            await db.withTransaction(async tx => {
+                const {id} =
+                    await tx.properties.insert(prop)
 
-        rep.status(201).send({id})
+                await tx.declaration_files.insert({
+                    property_id: id,
+                    content: Buffer.from(prop.declaration_file, 'base64'),
+                })
+
+                await Promise.all(
+                    prop.buildings.map(b => {
+                        b.property_id = id
+
+                        b.units.forEach(u => u.building_id = undefined)
+                        // ^for massive deep insert
+
+                        return tx.buildings.insert(b, {deepInsert: true})
+                    }))
+
+                return id
+            })
+
+        rep.status(201).send({id: newPropId})
     },
 }

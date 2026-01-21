@@ -1,3 +1,6 @@
 DATABASE_URL=postgres://user:pass@localhost:5432/dbname
+API_PORT=3000
+WEBCLI_PORT=5000
+VITE_API_URL=http://localhost:3000
+WEBCLI_URL=http://localhost:5000
 GEMINI_API_KEY=
-PORT=3000

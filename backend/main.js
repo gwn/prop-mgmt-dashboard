@@ -1,12 +1,18 @@
 const
     fastify = require('fastify'),
+    fastifyCORS = require('@fastify/cors'),
     fastifySwagger = require('@fastify/swagger'),
     fastifySwaggerUI = require('@fastify/swagger-ui'),
     routes = require('./routes'),
-    {API_PORT} = process.env,
+    {API_PORT, WEBCLI_URL} = process.env,
 
     main = async () => {
         const app = fastify({logger: true})
+
+        app.register(fastifyCORS, {
+            origin: WEBCLI_URL,
+            methods: ['GET', 'HEAD', 'POST'],
+        })
 
         await app.register(fastifySwagger)
         await app.register(fastifySwaggerUI)

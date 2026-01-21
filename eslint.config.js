@@ -1,19 +1,19 @@
 const
-    {configs} = require('@eslint/js'),
-    globals = require('globals')
+    globals = require('globals'),
+    react = require('eslint-plugin-react')
 
 
 module.exports = [
-    configs.recommended,
-
     {
         languageOptions: {
-            ecmaVersion: 2021,
-            sourceType: 'commonjs',
-            globals: {...globals.node},
+            ecmaVersion: 2022,
+            globals: {
+                ...globals.node,
+                ...globals.browser,
+            },
         },
-
         rules: {
+            'no-unused-vars': ['error'],
             'semi': ['error', 'never'],
             'quotes': ['error', 'single'],
             'max-len': ['error', {code: 80}],
@@ -22,6 +22,23 @@ module.exports = [
             'object-curly-spacing': ['error', 'never'],
             'array-bracket-spacing': ['error', 'never'],
             'comma-dangle': ['error', 'always-multiline'],
+        },
+    },
+
+    {
+        files: ['backend/**/*.js'],
+        languageOptions: {sourceType: 'commonjs'},
+    },
+
+    {
+        files: ['**/*.{jsx,js}'],
+        languageOptions: {
+            sourceType: 'module',
+            parserOptions: {ecmaFeatures: {jsx: true}},
+        },
+        plugins: {react},
+        rules: {
+            'react/jsx-uses-vars': 'error',
         },
     },
 ]
