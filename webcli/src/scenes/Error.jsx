@@ -1,2 +1,5 @@
-export default ({error}) =>
-    <div>We fucked up, come back later if you care</div>
+export default ({error}) => <>
+    <h1>Error</h1>
+
+    <p>Something is wrong, what did you do? Try refreshing.</p>
+</>

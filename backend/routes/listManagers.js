@@ -16,12 +16,12 @@ module.exports = {
                 type: {
                     type: 'string',
                     enum: ['property_manager', 'accountant'],
-                }
+                },
             },
         },
         response: {
             200: {type: 'array', items: ManagerSchema},
-        }
+        },
     },
 
     handler: async req => {

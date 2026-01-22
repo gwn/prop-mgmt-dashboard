@@ -53,7 +53,9 @@ module.exports = {
                             b.units.forEach(u => u.building_id = undefined)
                             // ^for massive deep insert
 
-                            return tx.buildings.insert(b, {deepInsert: true})
+                            return tx.buildings.insert(b, {
+                                deepInsert: b.units.length > 0,
+                            })
                         }))
 
                     return id

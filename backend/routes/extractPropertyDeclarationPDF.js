@@ -19,7 +19,7 @@ module.exports = {
                     type: 'object',
                     format: 'binary',
                     description: 'A valid Teilungserklärung PDF file',
-                }
+                },
             },
         },
         response: {

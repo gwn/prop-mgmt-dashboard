@@ -1,0 +1,68 @@
+/* Chrome, Safari, Edge, Opera, Samsung Internet, etc. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;                    /* very important – removes ghost spacing */
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;     /* turns it into a normal text field */
+}
+
+body {
+  text-align: center;
+}
+
+table {
+  margin: 1em auto;
+}
+
+table.summary tbody th {
+  text-align: right;
+}
+table.summary tbody td {
+  text-align: left;
+}
+
+table.excel {
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+table.excel thead,
+table.excel tbody,
+table.excel tfoot,
+table.excel tr,
+table.excel th,
+table.excel td {
+    margin: 0;
+    padding: 0;
+}
+
+table.excel td {
+    border: 1px solid #ccc;
+}
+
+table.excel th {
+  font-size: 10px;
+  padding: 3px;
+}
+
+table.excel input {
+    max-width: 50px;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: 0;
+    width: 100%;
+    text-align: right;
+}
+table.excel input.long {
+    max-width: 200px;
+    text-align: left;
+}
+table.excel input.short {
+    max-width: 30px;
+}

@@ -1,27 +1,9 @@
-import {Button} from '@radix-ui/themes'
+import {Card} from '@radix-ui/themes'
 
 
-export default ({properties, onToggleWizard}) =>
-    <div>
-        <h1>Property Dashboard</h1>
-
-        <Button
-            onClick={() => onToggleWizard(true)}
-            children='Create new property'
-        />
-
-        {properties.length > 0 &&
-            <div>
-                <h2>Existing Properties</h2>
-
-                <ul>{properties.map(p =>
-                    <li key={p.id}>
-                        <PropertyCard prop={p} />
-                    </li>,
-                )}</ul>
-            </div>
-        }
-    </div>
+export default ({items}) =>
+    items.length > 0 &&
+        items.map(p => <PropertyCard key={p.name} prop={p} />)
 
 
 const PropertyCard = ({prop}) => {
@@ -32,13 +14,13 @@ const PropertyCard = ({prop}) => {
         )
 
     return (
-        <article>
+        <Card size={2}>
             <strong>{prop.name}</strong>
 
             <br />Type: {prop.management_type}
             <br />Number: {prop.unique_number || '—'}
             <br />Buildings: {prop.buildings?.length || 0}
             <br />Units: {unitNumber}
-        </article>
+        </Card>
     )
 }

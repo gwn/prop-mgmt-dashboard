@@ -9,7 +9,8 @@
   "scripts": {
     "dev:be": "env $(cat env) node --watch backend/main | pino-pretty",
     "dev:fe": "cd webcli && env $(cat ../env) vite",
-    "dev": "npm run dev:be & npm run dev:fe"
+    "dev": "npm run dev:be & npm run dev:fe",
+    "lint": "eslint"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",

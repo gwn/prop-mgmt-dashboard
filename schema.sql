@@ -8,14 +8,18 @@ create type unit_type as enum ('apartment', 'office', 'garden', 'parking');
 create table property_managers (
     id      serial primary key,
     name    text not null,
-    address text not null
+    address text not null,
+
+    unique (name, address)
 );
 
 
 create table accountants (
     id      serial primary key,
     name    text not null,
-    address text not null
+    address text not null,
+
+    unique (name, address)
 );
 
 

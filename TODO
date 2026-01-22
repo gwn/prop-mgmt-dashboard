@@ -1,9 +1,11 @@
 Required:
 
-- Implement bulk add buildings
-- Improve UI & UX
-- Ensure compatibility with spec
+- Simple form validation
+- Add component names
+- Beautify
 
 Optional:
 - Implement detailed property listing
 - Implement property editing
+- Get rid of Lodash
+- Deduplicate bulk add logic

@@ -38,7 +38,7 @@ const
         type: 'object',
         required: [
             'name', 'street', 'house_number', 'construction_year',
-            'description', 'units',
+            'description',
         ],
         properties: {
             id: {type: 'integer'},

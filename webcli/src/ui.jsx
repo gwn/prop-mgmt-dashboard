@@ -1,34 +1,48 @@
+import {forwardRef} from 'react'
 import {Select} from '@radix-ui/themes'
 import * as Label from '@radix-ui/react-label'
 
 
 const
-    Input = ({label, type = 'text', value, onChange, ...props}) => <>
-        <Label.Root children={label} />
+    Input = forwardRef((
+        {label, type = 'text', value, onChange, ...props},
+        ref,
+    ) => <>
+        {label && <Label.Root children={label} />}
 
         <input
+            ref={ref}
             type={type}
             value={value}
             onChange={e => onChange(e.target.value)}
             {...props}
         />
-    </>,
+    </>),
 
 
-    FileInput = ({label, value, onChange, ...props}) => <>
-        <Label.Root children={label} />
+    FileInput = forwardRef((
+        {label, value, onChange, ...props},
+        ref,
+    ) => <>
+        {label && <Label.Root children={label} />}
 
         <input
+            ref={ref}
             type='file'
             value={value}
             onChange={e => onChange(e.target.files)}
             {...props}
         />
-    </>,
+    </>),
 
 
-    TextArea = ({label, value, onChange, ...props}) => <>
-        <Label.Root children={label} />
+    TextArea = ({
+        label,
+        value,
+        onChange,
+        ...props
+    }) => <>
+        {label && <Label.Root children={label} />}
 
         <textarea
             value={value}
@@ -38,12 +52,20 @@ const
     </>,
 
 
-    Select_ = ({label, placeholder = '', opts, value, onChange}) => <>
-        <Label.Root children={label} />
+    Select_ = ({
+        label,
+        placeholder = '',
+        opts,
+        value,
+        onChange,
+        ...props
+    }) => <>
+        {label && <Label.Root children={label} />}
 
         <Select.Root
             value={value}
             onValueChange={onChange}
+            {...props}
         >
             <Select.Trigger placeholder={placeholder} />
 
