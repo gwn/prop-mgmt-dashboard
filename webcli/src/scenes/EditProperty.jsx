@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {keyBy} from 'lodash'
+import {Button, Dialog} from '@radix-ui/themes'
 import {Input, FileInput, Select} from '../ui'
 
 
@@ -7,12 +8,33 @@ export default ({
     formData,
     propManagers,
     accountants,
+    onManagerAdd,
     onUpdate,
     onExtract,
     onNext,
 }) => {
     const
         [declarationFile, setDeclarationFile] = useState(null),
+
+        emptyManagerState = {name: '', address: ''},
+
+        [newManagerType, setNewManagerType] = useState(),
+        [newManager, setNewManager] = useState(emptyManagerState),
+        updateNewManager = patch => setNewManager(pm => ({...pm, ...patch})),
+
+        [managerDialogOpen, setManagerDialogOpen] = useState(false),
+
+        openNewManagerDialog = managerType => {
+            setNewManagerType(managerType)
+            setManagerDialogOpen(true)
+        },
+
+        createNewManager = () => {
+            onManagerAdd(newManagerType, newManager)
+            onUpdate({[newManagerType]: newManager})
+            setNewManager(emptyManagerState)
+            setManagerDialogOpen(false)
+        },
 
         handleDeclarationFileChange = e => {
             const file = e.target.files[0]
@@ -63,6 +85,11 @@ export default ({
                     value={formData.property_manager}
                     onChange={val => onUpdate({property_manager: val})}
                 />
+
+                <Button
+                    children='Add New'
+                    onClick={() => openNewManagerDialog('property_manager')}
+                />
             </div>
 
             <div>
@@ -72,6 +99,11 @@ export default ({
                     opts={keyBy(accountants, 'name')}
                     value={formData.accountant}
                     onChange={val => onUpdate({accountant: val})}
+                />
+
+                <Button
+                    children='Add New'
+                    onClick={() => openNewManagerDialog('accountant')}
                 />
             </div>
 
@@ -99,6 +131,49 @@ export default ({
                     children='Next'
                 />
             </div>
+
+            <NewManagerDialog
+                open={managerDialogOpen}
+                onOpenChange={setManagerDialogOpen}
+                title={'Add New ' + newManagerType}
+                value={newManager}
+                onChange={updateNewManager}
+                onSubmit={() => createNewManager(newManagerType)}
+            />
         </div>
     )
 }
+
+const NewManagerDialog = ({
+    open,
+    onOpenChange,
+    title,
+    value,
+    onChange,
+    onSubmit,
+}) =>
+    <Dialog.Root
+        open={open}
+        onOpenChange={onOpenChange}
+    >
+        <Dialog.Content aria-describedby={undefined}>
+            <Dialog.Title children={title} />
+
+            <Input
+                label='Name'
+                value={value.name}
+                onChange={val => onChange({name: val})}
+            />
+
+            <Input
+                label='Address'
+                value={value.address}
+                onChange={val => onChange({address: val})}
+            />
+
+            <Button
+                children='Add'
+                onClick={onSubmit}
+            />
+        </Dialog.Content>
+    </Dialog.Root>

@@ -34,12 +34,27 @@ const
             [wizardOpen, toggleWizard] = useState(false),
 
             activeScene =
-                wizardOpen ? PropertyCreationWizard : PropertyListingScene
+                wizardOpen ? PropertyCreationWizard : PropertyListingScene,
+
+            [propManagers_, setPropManagers] = useState(propManagers),
+            [accountants_, setAccountants] = useState(accountants),
+
+            handleNewManager = (managerType, managerRec) => {
+                const setManager = {
+                    property_manager: setPropManagers,
+                    accountant: setAccountants,
+                }[
+                    managerType
+                ]
+
+                setManager(prev => [...prev, managerRec])
+            }
 
         return e(activeScene, {
             properties,
-            propManagers,
-            accountants,
+            propManagers: propManagers_,
+            accountants: accountants_,
+            onManagerAdd: handleNewManager,
             onToggleWizard: toggleWizard,
         })
     }

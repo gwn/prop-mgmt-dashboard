@@ -8,7 +8,7 @@ import EditUnits from './EditUnits'
 const steps = [EditProperty, EditBuildings, EditUnits]
 
 
-export default ({propManagers, accountants, onToggleWizard}) => {
+export default ({propManagers, accountants, onToggleWizard, onManagerAdd}) => {
     const
         [currentStepIdx, setStep] = useState(0),
         goToPrevStep = () => setStep(p => p - 1),
@@ -19,10 +19,10 @@ export default ({propManagers, accountants, onToggleWizard}) => {
             name: '',
             unique_number: '',
             management_type: 'weg',
-            property_manager: undefined, // {id: null, name: '', address: ''}
-            accountant: undefined, // {id: null, name: '', address: ''},
-            declaration_file: undefined, // File object
-            buildings: [], // [{ name, street, house_number, construction_year, description, units: [] }]
+            property_manager: propManagers[0], // {id?, name, address}
+            accountant: accountants[0], // {id?, name, address}
+            declaration_file: null, // File object
+            buildings: [], // [{name, street, house_number, construction_year, description, units: []}]
         }),
 
         updateFormData = patch =>
@@ -32,6 +32,12 @@ export default ({propManagers, accountants, onToggleWizard}) => {
 
         handleExtract = async file => {
             const extractedPropRecord = await extractPdf(file)
+
+            if (!propManagers.includes(extractedPropRecord.property_manager))
+                onManagerAdd('property_manager', extractedPropRecord.property_manager)
+
+            if (!accountants.includes(extractedPropRecord.accountant))
+                onManagerAdd('accountant', extractedPropRecord.accountant)
 
             updateFormData(Object.assign(extractedPropRecord, {
                 declaration_file: file,
@@ -60,6 +66,7 @@ export default ({propManagers, accountants, onToggleWizard}) => {
                 formData,
                 propManagers,
                 accountants,
+                onManagerAdd,
                 onUpdate: updateFormData,
                 onExtract: handleExtract,
                 onNext: goToNextStep,
