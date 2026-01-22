@@ -76,7 +76,9 @@ const
     }
 
 
-module.exports = {
-    ManagerSchema,
-    PropertySchema,
-}
+// for backend
+if (typeof module !== 'undefined' && module.exports)
+    module.exports = {ManagerSchema, PropertySchema, BuildingSchema, UnitSchema}
+
+// for frontend
+export {ManagerSchema, PropertySchema, BuildingSchema, UnitSchema}

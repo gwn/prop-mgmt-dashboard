@@ -1,7 +1,10 @@
 import {useState} from 'react'
-import {Button} from '@radix-ui/themes'
-import {Input, TextArea, Select} from '../ui'
-
+import Papa from 'papaparse'
+import Ajv from 'ajv'
+import {Button, Dialog} from '@radix-ui/themes'
+import {UnitSchema} from '../../../schema'
+import {readFile} from '../util'
+import {Input, TextArea, Select, FileInput} from '../ui'
 
 export default ({
     formData,
@@ -25,6 +28,8 @@ export default ({
         [newUnit, setNewUnit] = useState(emptyUnitState),
 
         [selectedBuildingIdx, setSelectedBuildingIdx] = useState(0),
+
+        [bulkAddResult, setBulkAddResult] = useState(null),
 
         selectedBuilding =
             formData.buildings[selectedBuildingIdx] || {units: []},
@@ -59,8 +64,16 @@ export default ({
         },
 
         removeUnit = unitIdx =>
-            mutateUnits(units => units.filter((_, i) => i !== unitIdx))
+            mutateUnits(units => units.filter((_, i) => i !== unitIdx)),
 
+        handleBulkAdd = async files => {
+            const
+                fileContent = await readFile(files[0], 'text'),
+                parsed = parseAndValidateCSV(fileContent, UnitSchema)
+
+            setBulkAddResult(parsed)
+            mutateUnits(units => [...units, ...parsed.valid])
+        }
 
     return (
         <div>
@@ -196,6 +209,12 @@ export default ({
                     onClick={addUnit}
                     children='Add Unit'
                 />
+
+                <FileInput
+                    label='Bulk add'
+                    type='file'
+                    onChange={handleBulkAdd}
+                />
             </div>
 
             <div>
@@ -209,6 +228,79 @@ export default ({
                     children='Submit Property'
                 />
             </div>
+
+            <Dialog.Root
+                open={bulkAddResult}
+                onOpenChange={() => setBulkAddResult(null)}
+            >
+                {bulkAddResult &&
+                    <Dialog.Content>
+                        <p>
+                            Successfully added
+                            {bulkAddResult.valid.length} units.
+                        </p>
+
+                        <p>
+
+                            See below for a debug log containing the records
+                            that couldn't be parsed / validated along with the
+                            relevant errors.
+
+                            <pre>
+                                {JSON.stringify(
+                                    bulkAddResult.invalid, false, 4)}
+                            </pre>
+                        </p>
+                    </Dialog.Content>
+                }
+            </Dialog.Root>
         </div>
     )
 }
+
+const
+    parseAndValidateCSV = (csvData, schema) => {
+        const
+            ajv = new Ajv(),
+            validate = ajv.compile(schema),
+            headers = schema.required,
+            parsed = Papa.parse(csvData, {
+                delimiter: ',',
+                skipEmptyLines: true,
+            }),
+            valid = [],
+            invalid = []
+
+        parsed.data.forEach((row, index) => {
+            const record = {}
+
+            headers.forEach((header, i) => {
+                const value = row[i]
+                if (value === '') {
+                    return
+                }
+                const propertyType = schema.properties[header].type
+
+                if (propertyType === 'integer') {
+                    record[header] = parseInt(value, 10)
+                } else if (propertyType === 'number') {
+                    record[header] = parseFloat(value)
+                } else {
+                    record[header] = value
+                }
+            })
+
+            if (validate(record))
+                valid.push(record)
+
+            else {
+                invalid.push({
+                    row: index + 1,
+                    data: record,
+                    errors: validate.errors
+                })
+            }
+        })
+
+        return {valid, invalid}
+    }
