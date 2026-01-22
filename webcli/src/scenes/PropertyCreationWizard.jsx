@@ -1,6 +1,7 @@
 import {createElement as e, useState} from 'react'
 import {Button} from '@radix-ui/themes'
 import {extractPropertyDeclarationPdf, createProperty} from '../api'
+import {readFile} from '../util'
 import EditProperty from './EditProperty'
 import EditBuildings from './EditBuildings'
 import EditUnits from './EditUnits'
@@ -51,7 +52,7 @@ export default ({propManagers, accountants, onToggleWizard, onManagerAdd}) => {
                 ...formData,
 
                 declaration_file:
-                    (await fileToBase64(formData.declaration_file)),
+                    (await readFile(formData.declaration_file, 'base64')),
             })
 
             setStep(0)
@@ -77,16 +78,4 @@ export default ({propManagers, accountants, onToggleWizard, onManagerAdd}) => {
             })}
         </div>
     )
-}
-
-
-async function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-
-        reader.onerror = (error) => reject(error)
-        reader.onload = () => resolve(reader.result.split(',')[1])
-
-        reader.readAsDataURL(file)
-    })
 }
