@@ -1,3 +1,9 @@
+Required:
+
 - Implement bulk add units
-- Implement property manager & accountant creation
 - Improve UI & UX
+- Ensure compatibility with spec
+
+Optional:
+- Implement detailed property listing
+- Implement property editing
