@@ -1,7 +1,7 @@
 const
     {keyBy, groupBy} = require('lodash'),
     {getDB} = require('../db'),
-    {PropertySchema} = require('../schema')
+    {PropertySchema} = require('../../schema')
 
 
 module.exports = {

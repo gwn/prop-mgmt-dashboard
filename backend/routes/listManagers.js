@@ -1,6 +1,6 @@
 const
     {getDB} = require('../db'),
-    {ManagerSchema} = require('../schema')
+    {ManagerSchema} = require('../../schema')
 
 
 module.exports = {

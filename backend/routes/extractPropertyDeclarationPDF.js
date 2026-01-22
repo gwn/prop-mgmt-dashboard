@@ -1,6 +1,6 @@
 const
     Anthropic = require('@anthropic-ai/sdk'),
-    {PropertySchema} = require('../schema'),
+    {PropertySchema} = require('../../schema'),
     {ANTHROPIC_API_KEY} = process.env
 
 
