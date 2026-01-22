@@ -76,6 +76,15 @@ export default ({
             </div>
 
             <div>
+                <Input
+                    label='Total MEA'
+                    type='number'
+                    value={formData.total_mea}
+                    onChange={val => onUpdate({total_mea: val})}
+                />
+            </div>
+
+            <div>
                 <Select
                     label='Property Manager'
                     placeholder='Select'

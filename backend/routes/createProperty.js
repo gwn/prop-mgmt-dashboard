@@ -40,10 +40,11 @@ module.exports = {
 
                     const {id} = await tx.properties.insert(prop)
 
-                    await tx.declaration_files.insert({
-                        property_id: id,
-                        content: Buffer.from(prop.declaration_file, 'base64'),
-                    })
+                    if (prop.declaration_file)
+                        await tx.declaration_files.insert({
+                            property_id: id,
+                            content: Buffer.from(prop.declaration_file, 'base64'),
+                        })
 
                     await Promise.all(
                         prop.buildings.map(b => {

@@ -21,6 +21,7 @@ export default ({propManagers, accountants, onToggleWizard, onManagerAdd}) => {
             name: '',
             unique_number: '',
             management_type: 'weg',
+            total_mea: null,
             property_manager: propManagers[0], // {id?, name, address}
             accountant: accountants[0], // {id?, name, address}
             declaration_file: null, // File object
@@ -52,7 +53,9 @@ export default ({propManagers, accountants, onToggleWizard, onManagerAdd}) => {
                 ...formData,
 
                 declaration_file:
-                    (await readFile(formData.declaration_file, 'base64')),
+                    formData.declarationFile
+                        ? (await readFile(formData.declaration_file, 'base64'))
+                        : null,
             })
 
             setStep(0)
