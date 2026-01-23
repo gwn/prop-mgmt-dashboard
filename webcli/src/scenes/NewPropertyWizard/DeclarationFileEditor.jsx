@@ -4,7 +4,11 @@ import {extractPropertyDeclarationPdf} from '@/api'
 import {FileInput} from '@/ui'
 
 
-export default ({value, onChange, onCancel}) => {
+export default function DeclarationFileEditor({
+    value,
+    onChange,
+    onCancel,
+}) {
     const
         declarationFileWidgetRef = useRef(null),
 

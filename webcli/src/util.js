@@ -1,5 +1,5 @@
-import Papa from 'papaparse'
 import Ajv from 'ajv'
+import Papa from 'papaparse'
 
 
 const
@@ -9,6 +9,7 @@ const
             {...coll[targetItemIdx], ...patch},
             ...coll.slice(targetItemIdx + 1),
         ],
+
 
     readFile = (file, format = 'text') => {
         return new Promise((resolve, reject) => {
@@ -31,6 +32,26 @@ const
             reader[method](file)
         })
     },
+
+
+    validateFormData = (data, schema) => {
+        const
+            validate = new Ajv({allErrors: true}).compile(schema),
+
+            validationSuccessful = validate(data),
+
+            errors = Object.fromEntries(
+                (validate.errors || [])
+                    .filter(e => e.keyword !== 'required')
+                    .map(e => [
+                        e.instancePath.slice(1),
+                        e.message,
+                    ]),
+            )
+
+        return errors
+    },
+
 
     parseAndValidateCSV = (csvData, schema) => {
         const
@@ -82,5 +103,6 @@ const
 export {
     updateCollectionItem,
     readFile,
+    validateFormData,
     parseAndValidateCSV,
 }

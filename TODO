@@ -1,11 +1,10 @@
 Required:
 
-- Simple form validation
-- Add component names
 - Beautify
+- TODOs in code
+- QA
 
 Optional:
 - Implement detailed property listing
 - Implement property editing
 - Get rid of Lodash
-- Deduplicate bulk add logic

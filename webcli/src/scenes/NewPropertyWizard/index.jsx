@@ -11,9 +11,9 @@ const
         unique_number: '',
         management_type: 'weg',
         total_mea: '',
-        property_manager: null, // {id?, name, address}
-        accountant: null, // {id?, name, address}
-        declaration_file: null, // File object
+        property_manager_id: null,
+        accountant_id: null,
+        declaration_file: undefined, // File object
         buildings: [],
     },
 
@@ -27,18 +27,18 @@ const
     }
 
 
-export default ({
+export default function NewPropertyWizard({
     propManagers = [],
     accountants = [],
     onManagerAdd,
     initState,
     onSubmit,
-}) => {
+}) {
     const
         initPropState = initState || {
             ...emptyPropState,
-            property_manager: propManagers[0],
-            accountant: accountants[0],
+            property_manager_id: propManagers[0]?.id,
+            accountant_id: accountants[0]?.id,
         },
 
         [activeSceneName, setActiveScene] = useState('DeclarationFileEditor'),
@@ -152,9 +152,11 @@ export default ({
         {activeSceneName === 'BuildingEditor' &&
             <BuildingEditor
                 value={propState.buildings[currentBuildingIdx]}
-                onChange={patch => updateBuilding(currentBuildingIdx, patch)}
-                onDelete={() => handleBuildingDelete[currentBuildingIdx]}
-                onExit={() => setActiveScene('PropertyEditor')}
+                onCancel={() => setActiveScene('PropertyEditor')}
+                onSubmit={patch => {
+                    updateBuilding(currentBuildingIdx, patch)
+                    setActiveScene('PropertyEditor')
+                }}
             />}
     </>
 }

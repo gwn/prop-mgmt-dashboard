@@ -1,8 +1,9 @@
-import {useState, useRef} from 'react'
+import {useState} from 'react'
 import {Button, Dialog} from '@radix-ui/themes'
-import {readFile, parseAndValidateCSV} from '@/util'
-import {Input, Select, FileInput} from '@/ui'
-import {BuildingSchema} from '@/../../schema'
+import {mapKeys} from 'lodash'
+import {validateFormData} from '@/util'
+import {Input, Select, BulkAdd, ExcelTable} from '@/ui'
+import {PropertySchema, BuildingSchema} from '@/../../schema'
 
 
 const emptyManagerState = {name: '', address: ''}
@@ -25,7 +26,7 @@ export default function PropertyEditor({
         [newManagerType, setNewManagerType] = useState(),
         [newManager, setNewManager] = useState(emptyManagerState),
         [managerDialogOpen, setManagerDialogOpen] = useState(false),
-        [bulkAddResult, setBulkAddResult] = useState(null),
+        [formErrors, setFormErrors] = useState({}),
 
         updateNewManager =
             patch => setNewManager(m => ({...m, ...patch})),
@@ -43,23 +44,21 @@ export default function PropertyEditor({
             setManagerDialogOpen(false)
         },
 
-        bulkAddElemRef = useRef(),
+        handleSubmit = () => {
+            const errors = validateFormData(value, PropertySchema)
 
-        triggerBulkAddFileWidget = () =>
-            bulkAddElemRef.current?.click(),
+            delete errors.declaration_file // TODO
 
-        handleBulkAdd = async files => {
-            if (!files[0])
-                return
+            if (!value.property_manager_id)
+                errors.property_manager_id = 'Property manager is required'
 
-            const
-                fileContent = await readFile(files[0], 'text'),
-                parsed = parseAndValidateCSV(fileContent, BuildingSchema)
+            if (!value.accountant_id)
+                errors.accountant_id = 'Accountant is required'
 
-            setBulkAddResult(parsed)
+            setFormErrors(errors)
 
-            onBuildingBulkAdd(
-                parsed.valid.map(b => ({...b, units: []})))
+            if (Object.keys(errors).length === 0)
+                onSubmit()
         }
 
     return <>
@@ -72,6 +71,8 @@ export default function PropertyEditor({
                     <Input
                         value={value.name}
                         onChange={val => onChange({name: val})}
+                        className={formErrors.name && 'error'}
+                        error={formErrors.name}
                     />
                 </td>
             </tr>
@@ -82,6 +83,8 @@ export default function PropertyEditor({
                     <Input
                         value={value.unique_number}
                         onChange={val => onChange({unique_number: val})}
+                        className={formErrors.unique_number && 'error'}
+                        error={formErrors.unique_number}
                     />
                 </td>
             </tr>
@@ -93,6 +96,7 @@ export default function PropertyEditor({
                         opts={{WEG: 'weg', MV: 'mv'}}
                         value={value.management_type}
                         onChange={val => onChange({management_type: val})}
+                        error={formErrors.management_type}
                     />
                 </td>
             </tr>
@@ -104,6 +108,7 @@ export default function PropertyEditor({
                         type='number'
                         value={value.total_mea}
                         onChange={val => onChange({total_mea: val})}
+                        error={formErrors.total_mea}
                     />
                 </td>
             </tr>
@@ -115,6 +120,7 @@ export default function PropertyEditor({
                         placeholder='Select'
                         value={value.property_manager_id}
                         onChange={val => onChange({property_manager_id: val})}
+                        error={formErrors.property_manager_id}
                         opts={Object.fromEntries(
                             propManagers.map(pm => [pm.name, pm.id]))}
                     />
@@ -134,6 +140,7 @@ export default function PropertyEditor({
                         placeholder='Select'
                         value={value.accountant_id}
                         onChange={val => onChange({accountant_id: val})}
+                        error={formErrors.accountant_id}
                         opts={Object.fromEntries(
                             accountants.map(a => [a.name, a.id]))}
                     />
@@ -150,7 +157,7 @@ export default function PropertyEditor({
 
         <Button
             children='Submit'
-            onClick={onSubmit}
+            onClick={handleSubmit}
             color='green'
         />
 
@@ -158,29 +165,35 @@ export default function PropertyEditor({
 
         <h2>Buildings</h2>
 
-        {value.buildings.length > 0 &&
-            <BuildingListing
-                items={value.buildings}
-                onChange={onBuildingChange}
-                onDelete={onBuildingDelete}
-                onZoom={onBuildingEdit}
-            />}
-
-        <Button
-            children='Add New'
-            onClick={onBuildingAdd}
+        <ExcelTable
+            items={value.buildings}
+            schema={[
+                ['Name', 'text', 'long', 'name'],
+                ['Street', 'text', 'long', 'street'],
+                ['House No', 'text', 'short', 'house_number'],
+                ['Constr Yr', 'number', 'short', 'construction_year'],
+                ['Description', 'text', 'longer', 'description'],
+                ['Units', 'number', 'short', item => item.units.length],
+                ['Detail', '', '', (_, i) =>
+                    <Button
+                        children='O'
+                        onClick={() => onBuildingEdit(i)}
+                    />],
+            ]}
+            formErrors={
+                mapKeys(formErrors, (v, k) =>
+                    k.match(/^buildings\/(.*)$/)?.[1])}
+            onChange={onBuildingChange}
+            onAdd={onBuildingAdd}
+            onDelete={onBuildingDelete}
         />
 
-        <Button
-            children='Import'
-            onClick={triggerBulkAddFileWidget}
-        />
-
-        <FileInput
-            ref={bulkAddElemRef}
-            accept='text/csv'
-            onChange={handleBulkAdd}
-            style={{display: 'none'}}
+        <BulkAdd
+            jsonSchema={BuildingSchema}
+            onComplete={parsed => {
+                onBuildingBulkAdd(
+                    parsed.valid.map(b => ({...b, units: []})))
+            }}
         />
 
         <NewManagerDialog
@@ -192,35 +205,9 @@ export default function PropertyEditor({
             onSubmit={() => createNewManager(newManagerType)}
         />
 
-        <Dialog.Root
-            open={bulkAddResult}
-            onOpenChange={() => setBulkAddResult(null)}
-        >
-            {bulkAddResult &&
-                <Dialog.Content aria-describedby={undefined}>
-                    <Dialog.Title>
-                        Successfully
-                        added {bulkAddResult.valid.length} buildings
-                    </Dialog.Title>
-
-                    {bulkAddResult.invalid.length > 0 && <>
-                        <p>
-                            <strong>{bulkAddResult.invalid.length}</strong>
-                            &nbsp;records couldn't be parsed / validated.
-                            See errors below:
-                        </p>
-
-                        <pre>
-                            {JSON.stringify(
-                                bulkAddResult.invalid, false, 4)}
-                        </pre>
-                    </>}
-
-                </Dialog.Content>
-            }
-        </Dialog.Root>
     </>
 }
+
 
 const
     NewManagerDialog = ({
@@ -255,66 +242,4 @@ const
                     onClick={onSubmit}
                 />
             </Dialog.Content>
-        </Dialog.Root>,
-
-
-    BuildingListing = ({items, onChange, onDelete, onZoom}) =>
-        <table className='excel'>
-            <thead>
-                <tr>
-                    <th/>
-                    <th>Name</th>
-                    <th>Street</th>
-                    <th>House Num</th>
-                    <th>Constr Year</th>
-                    <th>Description</th>
-                    <th>Units</th>
-                    <th>Detail</th>
-                </tr>
-            </thead>
-
-            <tbody>{items.map((b, i) =>
-                <tr key={i}>
-                    <td><Button
-                        children='-'
-                        onClick={() => onDelete(i)}
-                    /></td>
-
-                    <td><Input
-                        value={b.name}
-                        onChange={val => onChange(i, {name: val})}
-                        className='long'
-                    /></td>
-
-                    <td><Input
-                        value={b.street}
-                        onChange={val => onChange(i, {street: val})}
-                        className='long'
-                    /></td>
-
-                    <td><Input
-                        value={b.house_number}
-                        onChange={val => onChange(i, {house_number: val})}
-                    /></td>
-
-                    <td><Input
-                        value={b.construction_year}
-                        onChange={val => onChange(i, {construction_year: val})}
-                        type='number'
-                    /></td>
-
-                    <td><Input
-                        value={b.description}
-                        onChange={val => onChange(i, {description: val})}
-                        className='long'
-                    /></td>
-
-                    <td>{b.units.length}</td>
-
-                    <td><Button
-                        children='O'
-                        onClick={() => onZoom(i)}
-                    /></td>
-                </tr>,
-            )}</tbody>
-        </table>
+        </Dialog.Root>

@@ -1,8 +1,9 @@
-import {useState, useEffect, useRef} from 'react'
-import {Button, Dialog} from '@radix-ui/themes'
-import {updateCollectionItem, readFile, parseAndValidateCSV} from '@/util'
-import {Input, TextArea, Select, FileInput} from '@/ui'
-import {UnitSchema} from '@/../../schema'
+import {useState} from 'react'
+import {Button} from '@radix-ui/themes'
+import {mapKeys} from 'lodash'
+import {updateCollectionItem, validateFormData} from '@/util'
+import {Input, TextArea, Select, BulkAdd, ExcelTable} from '@/ui'
+import {BuildingSchema, UnitSchema} from '@/../../schema'
 
 
 const emptyUnitState = {
@@ -18,16 +19,14 @@ const emptyUnitState = {
 }
 
 
-export default ({
+export default function BuildingEditor({
     value,
-    onChange,
-    onExit,
-}) => {
+    onSubmit,
+    onCancel,
+}) {
     const
         [buildingState, setBuildingState] = useState(value),
-
-        [bulkAddResult, setBulkAddResult] = useState(null),
-        bulkAddElemRef = useRef(),
+        [formErrors, setFormErrors] = useState({}),
 
         updateBuilding = patch =>
             setBuildingState(prev => ({...prev, ...patch})),
@@ -54,24 +53,13 @@ export default ({
                 ...prev.slice(idx + 1),
             ]),
 
-        saveAndExit = () => {
-            onChange(buildingState)
-            onExit()
-        },
+        handleSubmit = () => {
+            const errors = validateFormData(buildingState, BuildingSchema)
 
-        triggerBulkAddFileWidget = () =>
-            bulkAddElemRef.current?.click(),
+            setFormErrors(errors)
 
-        handleBulkAdd = async files => {
-            if (!files[0])
-                return
-
-            const
-                fileContent = await readFile(files[0], 'text'),
-                parsed = parseAndValidateCSV(fileContent, UnitSchema)
-
-            setBulkAddResult(parsed)
-            bulkAddUnits(parsed.valid)
+            if (Object.keys(errors).length === 0)
+                onSubmit(buildingState)
         }
 
 
@@ -85,6 +73,7 @@ export default ({
                 <td><Input
                     value={buildingState.name}
                     onChange={val => updateBuilding({name: val})}
+                    error={formErrors.name}
                 /></td>
             </tr>
 
@@ -94,6 +83,7 @@ export default ({
                 <td><Input
                     value={buildingState.street}
                     onChange={val => updateBuilding({street: val})}
+                    error={formErrors.street}
                 /></td>
             </tr>
 
@@ -103,6 +93,7 @@ export default ({
                 <td><Input
                     value={buildingState.house_number}
                     onChange={val => updateBuilding({house_number: val})}
+                    error={formErrors.house_number}
                 /></td>
             </tr>
 
@@ -113,6 +104,7 @@ export default ({
                     type='number'
                     value={buildingState.construction_year}
                     onChange={val => updateBuilding({construction_year: val})}
+                    error={formErrors.construction_year}
                 /></td>
             </tr>
 
@@ -122,18 +114,19 @@ export default ({
                 <td><TextArea
                     value={buildingState.description}
                     onChange={val => updateBuilding({description: val})}
+                    error={formErrors.description}
                 /></td>
             </tr>
         </tbody></table>
 
         <Button
             children='Save'
-            onClick={saveAndExit}
+            onClick={handleSubmit}
         />
 
         <Button
             children='Cancel'
-            onClick={onExit}
+            onClick={onCancel}
             color='red'
         />
 
@@ -141,143 +134,41 @@ export default ({
 
         <h2>Units</h2>
 
-        {buildingState.units.length > 0 &&
-            <UnitListing
-                items={buildingState.units}
-                onChange={updateUnit}
-                onDelete={deleteUnit}
-            />}
-
-        <Button
-            children='Add New'
-            onClick={addUnit}
+        <ExcelTable
+            items={buildingState.units}
+            schema={[
+                ['No', 'text', 'short', 'number'],
+                ['Type', 'text', 'mid', (item, i) =>
+                    <Select
+                        size='1'
+                        value={item.type}
+                        onChange={val => updateUnit(i, {type: val})}
+                        opts={{
+                            Apartment: 'apartment',
+                            Office: 'office',
+                            Garden: 'garden',
+                            Parking: 'parking',
+                        }}
+                    />],
+                ['Floor', 'text', 'long', 'floor'],
+                ['Entrance', 'text', 'long', 'entrance'],
+                ['Size', 'number', 'short', 'size'],
+                ['CO Share', 'number', 'short', 'co_ownership_share'],
+                ['Constr Yr', 'number', 'short', 'construction_year'],
+                ['Rooms', 'number', 'short', 'rooms'],
+                ['Description', 'text', 'longer', 'description'],
+            ]}
+            formErrors={
+                mapKeys(formErrors, (v, k) =>
+                    k.match(/^units\/(.*)$/)?.[1])}
+            onChange={updateUnit}
+            onAdd={addUnit}
+            onDelete={deleteUnit}
         />
 
-        <Button
-            children='Import'
-            onClick={triggerBulkAddFileWidget}
+        <BulkAdd
+            jsonSchema={UnitSchema}
+            onComplete={parsed => bulkAddUnits(parsed.valid)}
         />
-
-        <FileInput
-            ref={bulkAddElemRef}
-            accept='text/csv'
-            onChange={handleBulkAdd}
-            style={{display: 'none'}}
-        />
-
-        <Dialog.Root
-            open={bulkAddResult}
-            onOpenChange={() => setBulkAddResult(null)}
-        >
-            {bulkAddResult &&
-                <Dialog.Content aria-describedby={undefined}>
-                    <Dialog.Title>
-                        Successfully
-                        added {bulkAddResult.valid.length} units
-                    </Dialog.Title>
-
-                    {bulkAddResult.invalid.length > 0 && <>
-                        <p>
-                            <strong>{bulkAddResult.invalid.length}</strong>
-                            &nbsp;records couldn't be parsed / validated.
-                            See errors below:
-                        </p>
-
-                        <pre>
-                            {JSON.stringify(
-                                bulkAddResult.invalid, false, 4)}
-                        </pre>
-                    </>}
-
-                </Dialog.Content>
-            }
-        </Dialog.Root>
     </>
 }
-
-
-const UnitListing = ({items, onChange, onDelete}) =>
-    <table className='excel'>
-        <thead>
-            <tr>
-                <th/>
-                <th>Number</th>
-                <th>Type</th>
-                <th>Floor</th>
-                <th>Entrance</th>
-                <th>Size</th>
-                <th>CO Share</th>
-                <th>Constr Year</th>
-                <th>Rooms</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-
-        <tbody>{items.map((u, i) =>
-            <tr key={i}>
-                <td><Button
-                    children='-'
-                    onClick={() => onDelete(i)}
-                /></td>
-
-                <td><Input
-                    value={u.number}
-                    onChange={val => onChange(i, {number: val})}
-                    className='short'
-                /></td>
-
-                <td><Select
-                    value={u.type}
-                    onChange={val => onChange(i, {type: val})}
-                    opts={{
-                        Apartment: 'apartment',
-                        Office: 'office',
-                        Garden: 'garden',
-                        Parking: 'parking',
-                    }}
-                    size='1'
-                /></td>
-
-                <td><Input
-                    value={u.floor}
-                    onChange={val => onChange(i, {floor: val})}
-                /></td>
-
-                <td><Input
-                    value={u.entrance}
-                    onChange={val => onChange(i, {entrance: val})}
-                /></td>
-
-                <td><Input
-                    value={u.size}
-                    onChange={val => onChange(i, {size: val})}
-                    type='number'
-                /></td>
-
-                <td><Input
-                    value={u.co_ownership_share}
-                    onChange={val => onChange(i, {co_ownership_share: val})}
-                    type='number'
-                /></td>
-
-                <td><Input
-                    value={u.construction_year}
-                    onChange={val => onChange(i, {construction_year: val})}
-                    type='number'
-                /></td>
-
-                <td><Input
-                    value={u.rooms}
-                    onChange={val => onChange(i, {rooms: val})}
-                    type='number'
-                    className='short'
-                /></td>
-
-                <td><Input
-                    value={u.description}
-                    onChange={val => onChange(i, {description: val})}
-                    className='long'
-                /></td>
-            </tr>,
-        )}</tbody>
-    </table>

@@ -1,9 +1,10 @@
 import {Card} from '@radix-ui/themes'
 
 
-export default ({items}) =>
-    items.length > 0 &&
+export default function PropertyListing({items}) {
+    return items.length > 0 &&
         items.map(p => <PropertyCard key={p.name} prop={p} />)
+}
 
 
 const PropertyCard = ({prop}) => {

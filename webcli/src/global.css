@@ -10,6 +10,11 @@ input[type="number"] {
   -moz-appearance: textfield;     /* turns it into a normal text field */
 }
 
+input.error,
+textarea.error {
+  border: 1px solid red !important;
+}
+
 body {
   text-align: center;
 }
@@ -41,8 +46,13 @@ table.excel td {
     padding: 0;
 }
 
+table.excel tr {
+  height: 0;
+}
+
 table.excel td {
     border: 1px solid #ccc;
+    height: 1px; /* trick to make inputs span all the space */
 }
 
 table.excel th {
@@ -50,19 +60,44 @@ table.excel th {
   padding: 3px;
 }
 
-table.excel input {
-    max-width: 50px;
+table.excel input,
+table.excel textarea {
+    display: block;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 5px;
     outline: none;
     border: 0;
     width: 100%;
-    text-align: right;
 }
-table.excel input.long {
-    max-width: 200px;
+table.excel button {
+    width: 100%;
+}
+table.excel input[type=number] {
+  text-align: right;
+}
+table.excel textarea {
     text-align: left;
+    max-height: 120px;
+    overflow-y: auto;
+    resize: none;
+    field-sizing: content;
 }
-table.excel input.short {
-    max-width: 30px;
+table.excel td {
+  vertical-align: top;
+}
+table.excel td,
+table.excel td.short {
+    max-width: 50px;
+}
+table.excel td.mid {
+    min-width: 100px;
+}
+table.excel td.long {
+    min-width: 150px;
+}
+table.excel td.longer {
+    min-width: 300px;
 }
