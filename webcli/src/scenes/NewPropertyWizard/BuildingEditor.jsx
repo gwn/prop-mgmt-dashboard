@@ -105,6 +105,8 @@ export default function BuildingEditor({
             /></li>
         </ul>
 
+        <hr />
+
         <Button
             children='Save'
             onClick={handleSubmit}

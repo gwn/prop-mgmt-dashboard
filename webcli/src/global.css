@@ -8,15 +8,12 @@ table {
 }
 
 hr {
-  width: 500px;
+  max-width: 500px;
   margin: 25px auto;
 }
 
-table.listing {
-
-}
 table.listing thead th {
-    font-size: 12px;
+    font-size: 10px;
 }
 table.listing tbody th {
     text-align: right;

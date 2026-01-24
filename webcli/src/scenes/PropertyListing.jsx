@@ -10,7 +10,7 @@ export default function PropertyListing({
 
         <hr />
 
-        {items.length > 0 &&
+        {items.length > 0 && <>
             <table className='listing'>
                 <thead>
                     <tr>
@@ -18,7 +18,7 @@ export default function PropertyListing({
                         <th>No</th>
                         <th>B</th>
                         <th>U</th>
-                        <th>Edit</th>
+                        <th>Zoom</th>
                     </tr>
                 </thead>
 
@@ -36,9 +36,10 @@ export default function PropertyListing({
                         </td>
                     </tr>,
                 )}</tbody>
-            </table>}
+            </table>
 
-        <hr />
+            <hr />
+        </>}
 
         <Button
             children='Add New'

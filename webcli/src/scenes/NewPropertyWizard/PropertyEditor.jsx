@@ -177,8 +177,8 @@ export default function PropertyEditor({
                 ['House No', 'text', 'short', 'house_number'],
                 ['Constr Yr', 'number', 'short', 'construction_year'],
                 ['Description', 'text', 'longer', 'description'],
-                ['Units', 'number', 'short', item => item.units.length],
-                ['Detail', '', 'btn', (_, i) =>
+                ['Units', 'number', 'btn', item => item.units.length],
+                ['Zoom', '', 'btn', (_, i) =>
                     <Button
                         children='>'
                         onClick={() => onBuildingEdit(i)}
