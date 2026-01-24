@@ -77,7 +77,7 @@ export default function App({
 
         handlePropertyDeleteRequest = async propIdx => {
             try {
-                await deleteProperty(properties[propIdx].id)
+                await deleteProperty(properties_[propIdx].id)
             } catch (e) {
                 return handleNetworkError(e)
             }
