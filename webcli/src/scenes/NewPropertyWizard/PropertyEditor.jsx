@@ -21,6 +21,7 @@ export default function PropertyEditor({
     onBuildingDelete,
     onBuildingEdit,
     onSubmit,
+    onCancel,
 }) {
     const
         [newManagerType, setNewManagerType] = useState(),
@@ -159,6 +160,11 @@ export default function PropertyEditor({
             children='Submit'
             onClick={handleSubmit}
             color='green'
+        />
+        <Button
+            children='Cancel'
+            onClick={onCancel}
+            color='red'
         />
 
         <hr />

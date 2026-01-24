@@ -32,18 +32,25 @@ export default function NewPropertyWizard({
     accountants = [],
     onManagerAdd,
     initState,
+    initScene,
     onSubmit,
+    onCancel,
 }) {
     const
-        initPropState = initState || {
-            ...emptyPropState,
-            property_manager_id: propManagers[0]?.id,
-            accountant_id: accountants[0]?.id,
-        },
+        [activeSceneName, setActiveScene] =
+            useState(initScene || 'DeclarationFileEditor'),
 
-        [activeSceneName, setActiveScene] = useState('DeclarationFileEditor'),
+        [propState, setPropState] =
+            useState(
+                initState
+                    ? {
+                        ...initState,
+                        property_manager_id: initState.property_manager_id || initState.property_manager.id,
+                        accountant_id: initState.accountant_id || initState.accountant.id,
+                    }
 
-        [propState, setPropState] = useState(initPropState),
+                    : emptyPropState,
+            ),
 
         [currentBuildingIdx, setCurrentBuildingIdx] = useState(),
 
@@ -147,6 +154,7 @@ export default function NewPropertyWizard({
                 onBuildingDelete={handleBuildingDelete}
                 onBuildingEdit={handleBuildingEdit}
                 onSubmit={() => onSubmit(propState)}
+                onCancel={onCancel}
             />}
 
         {activeSceneName === 'BuildingEditor' &&

@@ -18,6 +18,7 @@ export default function App({
         [properties_, setProperties] = useState(properties),
         [propManagers_, setPropManagers] = useState(propManagers),
         [accountants_, setAccountants] = useState(accountants),
+        [editedPropertyIdx, setEditedPropertyIdx] = useState(-1),
 
         [newManagerCounter, setNewManagerCounter] = useState(0),
 
@@ -37,16 +38,20 @@ export default function App({
             return id
         },
 
-        handleWizardSubmit = async newPropRec => {
+        handleWizardSubmit = async propRec => {
             const serialized =
-                await serializePropRec(
-                    newPropRec, propManagers_, accountants_)
+                await serializePropRec(propRec, propManagers_, accountants_)
 
             await createProperty(serialized)
 
-            setProperties(prev => [...prev, newPropRec])
+            setProperties(prev => [...prev, propRec])
 
             toggleWizard(false)
+        },
+
+        handlePropertyEditRequest = propIdx => {
+            setEditedPropertyIdx(propIdx)
+            toggleWizard(true)
         }
 
     return <>
@@ -57,7 +62,7 @@ export default function App({
         />
 
         <Button
-            onClick={() => toggleWizard(true)}
+            onClick={() => handlePropertyEditRequest(-1)}
             children='Add New'
             color={wizardOpen ? 'blue' : 'gray'}
         />
@@ -69,11 +74,16 @@ export default function App({
                 propManagers={propManagers_}
                 accountants={accountants_}
                 onManagerAdd={handleManagerAdd}
-                initState={undefined}
                 onSubmit={handleWizardSubmit}
+                onCancel={() => toggleWizard(false)}
+                initState={properties_[editedPropertyIdx]}
+                initScene={editedPropertyIdx > -1 ? 'PropertyEditor' : null}
             />
 
-            : <PropertyListing items={properties_} />}
+            : <PropertyListing
+                items={properties_}
+                onEditRequest={handlePropertyEditRequest}
+            />}
     </>
 }
 

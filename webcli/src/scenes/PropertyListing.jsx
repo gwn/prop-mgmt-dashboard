@@ -1,13 +1,21 @@
-import {Card} from '@radix-ui/themes'
+import {Card, Button} from '@radix-ui/themes'
 
 
-export default function PropertyListing({items}) {
+export default function PropertyListing({
+    items = [],
+    onEditRequest,
+}) {
     return items.length > 0 &&
-        items.map(p => <PropertyCard key={p.name} prop={p} />)
+        items.map((p, idx) =>
+            <PropertyCard
+                key={p.name}
+                prop={p}
+                onEditRequest={() => onEditRequest(idx)}
+            />)
 }
 
 
-const PropertyCard = ({prop}) => {
+const PropertyCard = ({prop, onEditRequest}) => {
     const unitNumber =
         prop.buildings?.reduce(
             (sum, b) => sum + b.units?.length || 0,
@@ -22,6 +30,11 @@ const PropertyCard = ({prop}) => {
             <br />Number: {prop.unique_number || '—'}
             <br />Buildings: {prop.buildings?.length || 0}
             <br />Units: {unitNumber}
+
+            <Button
+                children='Edit'
+                onClick={onEditRequest}
+            />
         </Card>
     )
 }
