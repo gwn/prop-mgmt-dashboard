@@ -249,10 +249,10 @@ const
                 /></li>
             </ul>
 
-            <Button
+            <p><Button
                 children='Add'
                 type='submit'
-            />
+            /></p>
         </form>,
 
 
