@@ -262,7 +262,7 @@ const
 
                     <tbody>{items.map((item, itemIdx) =>
                         <tr key={itemIdx}>
-                            <td><Button
+                            <td className={s.btn}><Button
                                 children='-'
                                 onClick={() => onDelete(itemIdx)}
                             /></td>

@@ -193,9 +193,9 @@ export default function PropertyEditor({
                 ['Constr Yr', 'number', 'short', 'construction_year'],
                 ['Description', 'text', 'longer', 'description'],
                 ['Units', 'number', 'short', item => item.units.length],
-                ['Detail', '', '', (_, i) =>
+                ['Detail', '', 'btn', (_, i) =>
                     <Button
-                        children='O'
+                        children='>'
                         onClick={() => onBuildingEdit(i)}
                     />],
             ]}

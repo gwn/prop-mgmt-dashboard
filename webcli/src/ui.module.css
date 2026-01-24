@@ -125,20 +125,34 @@ table.excel textarea {
     resize: none;
     field-sizing: content;
 }
+table.excel button {
+    padding: .5em;
+    margin: 0;
+    box-sizing: border-box;
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    height: 40px;
+    width: 40px;
+}
 table.excel td {
   vertical-align: top;
 }
-table.excel td,
+table.excel td.btn {
+  vertical-align: middle;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 table.excel td.short {
     max-width: 50px;
 }
 table.excel td.mid {
-    min-width: 100px;
+    max-width: 150px;
 }
 table.excel td.long {
-    min-width: 150px;
+    max-width: 200px;
 }
 table.excel td.longer {
-    min-width: 300px;
+    max-width: 400px;
 }
 /* end excel table */
