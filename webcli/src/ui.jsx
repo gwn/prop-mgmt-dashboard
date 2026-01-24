@@ -82,6 +82,11 @@ const
                         setModalScene(null)
                     },
 
+                    onDeleteRequest: () => {
+                        onChange([])
+                        setModalScene(null)
+                    },
+
                     onDownloadRequest: () => {
                         downloadFile(value)
                         setModalScene(null)
@@ -114,6 +119,7 @@ const
         value,
         onDownloadRequest,
         onChangeRequest,
+        onDeleteRequest,
         onCancel,
     }) => <>
         <p children={value.name} />
@@ -121,6 +127,7 @@ const
         <p>
             <Button children='Download' onClick={onDownloadRequest} />
             <Button children='Change' onClick={onChangeRequest} />
+            <Button children='Delete' onClick={onDeleteRequest} />
             <Button children='Cancel' onClick={onCancel} />
         </p>
     </>,
