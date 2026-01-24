@@ -40,7 +40,7 @@ const
             onChange={e =>
                 onChange(
                     type === 'number'
-                        ? parseFloat(e.target.value)
+                        ? (e.target.value ? parseFloat(e.target.value) : '')
                         : e.target.value,
                 )
             }
@@ -144,13 +144,14 @@ const
         <textarea
             ref={ref}
             value={value}
-            onChange={e =>
-                onChange(
-                    type === 'number'
-                        ? parseFloat(e.target.value)
-                        : e.target.value,
-                )
-            }
+            onChange={e => {
+                if (type !== 'number')
+                    return onChange(e.target.value)
+
+                const parsed = parseFloat(e.target.value)
+
+                onChange(isNaN(parsed) ? '' : parsed)
+            }}
             className={
                 s.textarea + ' ' + (error ? s.error : '') + ' ' + className}
             title={error}

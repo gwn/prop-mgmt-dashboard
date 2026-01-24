@@ -155,7 +155,7 @@ table.excel td.btn {
     min-width: 50px;
 }
 table.excel td.short {
-    max-width: 50px;
+    max-width: 60px;
 }
 table.excel td.mid {
     max-width: 150px;
