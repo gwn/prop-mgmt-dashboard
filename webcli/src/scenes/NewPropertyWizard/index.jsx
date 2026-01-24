@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {base64ToFile, updateCollectionItem} from '@/util'
+import {clone, base64ToFile, updateCollectionItem} from '@/util'
 import PropertyEditor from './PropertyEditor'
 import BuildingEditor from './BuildingEditor'
 
@@ -143,7 +143,7 @@ export default function NewPropertyWizard({
                 onBuildingBulkAdd={handleBuildingBulkAdd}
                 onBuildingDelete={handleBuildingDelete}
                 onBuildingEdit={handleBuildingEdit}
-                onSubmit={() => onSubmit(propState)}
+                onSubmit={() => onSubmit(clone(propState))}
                 onCancel={onCancel}
             />}
 

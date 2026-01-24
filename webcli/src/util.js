@@ -3,10 +3,22 @@ import Papa from 'papaparse'
 
 
 const
+    clone = obj => {
+        if (obj === null || typeof obj !== 'object')
+            return obj
+
+        if (Array.isArray(obj))
+            return [...obj]
+
+        return {...obj}
+    },
+
+
     mapKeys = (obj, mapper) =>
         Object.fromEntries(
             Object.entries(obj)
                 .map(([k, v]) => [mapper(v, k), v])),
+
 
     groupBy = (collection, keySelector) =>
         collection.reduce(
@@ -26,6 +38,7 @@ const
             {},
         ),
 
+
     keyBy = (collection, keySelector) =>
         Object.fromEntries(
             Object.entries(
@@ -33,6 +46,7 @@ const
             )
                 .map(([k ,v]) => [k, v[0]]),
         ),
+
 
     updateCollectionItem = (coll, targetItemIdx, patch) =>
         [
@@ -148,6 +162,7 @@ const
 
 
 export {
+    clone,
     mapKeys,
     groupBy,
     keyBy,

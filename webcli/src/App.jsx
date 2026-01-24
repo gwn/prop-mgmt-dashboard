@@ -1,6 +1,5 @@
 import {useState} from 'react'
-import {keyBy, readFile} from '@/util'
-import {Button} from '@/ui'
+import {clone, keyBy, readFile, updateCollectionItem} from '@/util'
 import {createProperty, editProperty} from './api'
 import PropertyListing from './scenes/PropertyListing'
 import NewPropertyWizard from './scenes/NewPropertyWizard'
@@ -41,9 +40,15 @@ export default function App({
             const serialized =
                 await serializePropRec(propRec, propManagers_, accountants_)
 
-            if (propRec.id)
+            if (editedPropertyIdx > -1) { // edit mode
                 await editProperty(propRec.id, propRec)
-            else {
+
+                setProperties(prev =>
+                    updateCollectionItem(prev, editedPropertyIdx, propRec))
+
+                setEditedPropertyIdx(-1)
+
+            } else { // create mode
                 await createProperty(serialized)
                 setProperties(prev => [...prev, propRec])
             }
@@ -82,8 +87,8 @@ const serializePropRec = async (p, propManagers, accountants) => {
         propManagersById = keyBy(propManagers, 'id'),
         accountantsById = keyBy(accountants, 'id')
 
-    p.property_manager = propManagersById[p.property_manager_id]
-    p.accountant = accountantsById[p.accountant_id]
+    p.property_manager = clone(propManagersById[p.property_manager_id])
+    p.accountant = clone(accountantsById[p.accountant_id])
 
     if (p.property_manager_id >= 1e6)
         delete p.property_manager.id
