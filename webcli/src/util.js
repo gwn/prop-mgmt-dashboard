@@ -99,12 +99,12 @@ const
 
 
     validateFormData = (data, schema) => {
-        const
-            validate = new Ajv({allErrors: true}).compile(schema),
+        const validate = new Ajv({allErrors: true}).compile(schema)
 
-            validationSuccessful = validate(data),
+        validate(data)
 
-            errors = Object.fromEntries(
+        const errors =
+            Object.fromEntries(
                 (validate.errors || [])
                     .filter(e => e.keyword !== 'required')
                     .map(e => [

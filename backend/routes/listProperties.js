@@ -37,7 +37,8 @@ module.exports = {
             unitsByBldId = groupBy(units, u => u.building_id)
 
         props.forEach(p => {
-            p.declaration_file = dfilesByPropId[p.id]?.content.toString('base64')
+            p.declaration_file =
+                dfilesByPropId[p.id]?.content.toString('base64')
 
             p.property_manager = pmsById[p.property_manager_id]
             p.accountant = accsById[p.accountant_id]

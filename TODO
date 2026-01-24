@@ -1,7 +1,4 @@
 - Implement detailed property listing
-- Error handling (especially for net ops)
-- TODOs in code
-- Lint and refactor all for the last time
-- QA
+- Error handling (especially for network ops)
 - Filtering sorting pagination
 - Mobile compatibility

@@ -14,7 +14,7 @@ const
         type: 'object',
         required: [
             'number', 'type', 'floor', 'entrance', 'size', 'co_ownership_share',
-            'construction_year', 'rooms'
+            'construction_year', 'rooms',
         ],
         properties: {
             id: {type: 'integer'},

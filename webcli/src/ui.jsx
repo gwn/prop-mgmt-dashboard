@@ -61,7 +61,9 @@ const
                 children={value ? value.name : placeholder}
                 onClick={triggerInput}
                 className={
-                    s.fileInput + ' ' + (error ? s.error : '') + ' ' + className}
+                    s.fileInput + ' '
+                    + (error ? s.error : '')
+                    + ' ' + className}
             />
 
             <input
