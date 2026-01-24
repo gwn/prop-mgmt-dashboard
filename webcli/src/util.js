@@ -3,6 +3,9 @@ import Papa from 'papaparse'
 
 
 const
+    noop = () => {},
+
+
     clone = obj => {
         if (obj === null || typeof obj !== 'object')
             return obj
@@ -162,6 +165,7 @@ const
 
 
 export {
+    noop,
     clone,
     mapKeys,
     groupBy,

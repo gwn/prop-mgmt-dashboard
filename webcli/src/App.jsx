@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import {clone, keyBy, readFile, updateCollectionItem} from '@/util'
 import {createProperty, editProperty} from './api'
+import {ModalProvider} from './context'
 import PropertyListing from './scenes/PropertyListing'
 import NewPropertyWizard from './scenes/NewPropertyWizard'
 
@@ -61,21 +62,25 @@ export default function App({
             toggleWizard(true)
         }
 
-    return wizardOpen
-        ? <NewPropertyWizard
-            propManagers={propManagers_}
-            accountants={accountants_}
-            onManagerAdd={handleManagerAdd}
-            onSubmit={handleWizardSubmit}
-            onCancel={() => toggleWizard(false)}
-            initState={properties_[editedPropertyIdx]}
-            initScene={editedPropertyIdx > -1 ? 'PropertyEditor' : null}
-        />
+    return (
+        <ModalProvider>
+            {wizardOpen
+                ? <NewPropertyWizard
+                    propManagers={propManagers_}
+                    accountants={accountants_}
+                    onManagerAdd={handleManagerAdd}
+                    onSubmit={handleWizardSubmit}
+                    onCancel={() => toggleWizard(false)}
+                    initState={properties_[editedPropertyIdx]}
+                    initScene={editedPropertyIdx > -1 ? 'PropertyEditor' : null}
+                />
 
-        : <PropertyListing
-            items={properties_}
-            onEditRequest={handlePropertyEditRequest}
-        />
+                : <PropertyListing
+                    items={properties_}
+                    onEditRequest={handlePropertyEditRequest}
+                />}
+        </ModalProvider>
+    )
 }
 
 

@@ -1,6 +1,7 @@
-import {forwardRef, useState, useRef} from 'react'
-import {Dialog} from '@radix-ui/themes'
-import {readFile, parseAndValidateCSV} from '@/util'
+import {forwardRef, useRef} from 'react'
+import {readFile, parseAndValidateCSV, noop} from '@/util'
+import {useModal} from '@/context'
+import s from './ui.module.css'
 
 
 const
@@ -12,7 +13,7 @@ const
         {
             type = 'text',
             value,
-            onChange,
+            onChange = noop,
             error,
             className = '',
             ...props
@@ -42,7 +43,7 @@ const
             value,
             error,
             placeholder = 'Upload',
-            onChange,
+            onChange = noop,
             className = '',
             ...props
         },
@@ -130,9 +131,34 @@ const
         </select>,
 
 
+    Modal = ({
+        onClose,
+        children,
+    }) => {
+        const handleBackdropClick = e =>
+            e.target === e.currentTarget && onClose()
+
+        return (
+            <div className={s.modal}>
+                <div
+                    onClick={handleBackdropClick}
+                    className={s.backdrop}
+                >
+                    <div className={s.container}>
+                        <div
+                            children={children}
+                            className={s.content}
+                        />
+                    </div>
+                </div>
+            </div>
+        )
+    },
+
+
     BulkAdd = ({jsonSchema, onComplete}) => {
         const
-            [bulkAddResult, setBulkAddResult] = useState(null),
+            setModalScene = useModal(),
 
             handleBulkAdd = async files => {
                 if (!files[0])
@@ -142,46 +168,30 @@ const
                     fileContent = await readFile(files[0], 'text'),
                     parsed = parseAndValidateCSV(fileContent, jsonSchema)
 
-                setBulkAddResult(parsed)
-
+                setModalScene(BulkAddResult, parsed)
                 onComplete(parsed)
             }
 
-        return <>
-            <FileInput
-                accept='text/csv'
-                placeholder='Import'
-                onChange={handleBulkAdd}
-            />
-
-            <Dialog.Root
-                open={bulkAddResult}
-                onOpenChange={() => setBulkAddResult(null)}
-            >
-                {bulkAddResult &&
-                    <Dialog.Content aria-describedby={undefined}>
-                        <Dialog.Title>
-                            Successfully
-                            added {bulkAddResult.valid.length} records
-                        </Dialog.Title>
-
-                        {bulkAddResult.invalid.length > 0 && <>
-                            <p>
-                                <strong>{bulkAddResult.invalid.length}</strong>
-                                &nbsp;records couldn't be parsed / validated.
-                                See errors below:
-                            </p>
-
-                            <pre>
-                                {JSON.stringify(
-                                    bulkAddResult.invalid, false, 4)}
-                            </pre>
-                        </>}
-                    </Dialog.Content>
-                }
-            </Dialog.Root>
-        </>
+        return <FileInput
+            accept='text/csv'
+            placeholder='Import'
+            onChange={handleBulkAdd}
+        />
     },
+
+
+    BulkAddResult = ({valid, invalid}) => <>
+        <p>Successfully added {valid.length} records</p>
+
+        {invalid.length > 0 && <>
+            <p>
+                <strong>{invalid.length}</strong> records couldn't be
+                parsed / validated. See errors below:
+            </p>
+
+            <pre>{JSON.stringify(invalid, false, 4)}</pre>
+        </>}
+    </>,
 
 
     ExcelTable = ({
@@ -196,7 +206,7 @@ const
         const
             newItemFirstInputRef = newItemFirstInputRef_ || useRef(),
 
-            [showTips, toggleTips] = useState(false),
+            setModalScene = useModal(),
 
             handleAdd = () => {
                 onAdd()
@@ -266,34 +276,26 @@ const
 
             <Button
                 children='Tips'
-                onClick={() => toggleTips(true)}
+                onClick={() => setModalScene(TableTips)}
                 color='yellow'
             />
-
-            <Dialog.Root
-                open={showTips}
-                onOpenChange={() => toggleTips(false)}
-            >
-                <Dialog.Content aria-describedby={undefined}>
-                    <Dialog.Title children='Table tips and hotkeys' />
-
-                    <p>
-                        After you create a new item the first input will be
-                        focused
-                    </p>
-
-                    <p>Press Shift+Enter to create a new item</p>
-
-                    <p>Press Shift+Backspace to delete the current item</p>
-                </Dialog.Content>
-            </Dialog.Root>
         </>
-    }
+    },
+
+
+    TableTips = () => <>
+        <p>After you create a new item the first input will be focused</p>
+
+        <p>Press Shift+Enter to create a new item</p>
+
+        <p>Press Shift+Backspace to delete the current item</p>
+    </>
 
 
 Input.displayName = 'Input'
 FileInput.displayName = 'FileInput'
 TextArea.displayName = 'TextArea'
+Modal.displayName = 'Modal'
 Select.displayName = 'Select'
 BulkAdd.displayName = 'BulkAdd'
 ExcelTable.displayName = 'ExcelTable'
@@ -305,6 +307,7 @@ export {
     FileInput,
     TextArea,
     Select,
+    Modal,
     BulkAdd,
     ExcelTable,
 }

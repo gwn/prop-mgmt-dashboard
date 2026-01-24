@@ -1,7 +1,5 @@
 import ReactDOM from 'react-dom/client'
 import {createElement as e, StrictMode} from 'react'
-import {Theme} from '@radix-ui/themes'
-import '@radix-ui/themes/styles.css'
 import {getProperties, getPropertyManagers, getAccountants} from './api'
 import App from './App'
 import ErrorScene from './scenes/Error'
@@ -26,7 +24,7 @@ const
     render = (component, props) =>
         ReactDOM
             .createRoot(document.getElementById('root'))
-            .render(e(StrictMode, {}, e(Theme, {}, e(component, props))))
+            .render(e(StrictMode, {}, e(component, props)))
 
 
 boot()

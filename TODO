@@ -1,8 +1,8 @@
-- Implement property editing: Backend
-- Get rid of Radix
+- Bulk add buildings broken (because of required units field in the schema)
 - Implement detailed property listing
 - Error handling (especially for net ops)
 - Filtering sorting pagination
+- CSS Reset
 - Better CSS with CSS modules
 - TODOs in code
 - Lint and refactor all for the last time

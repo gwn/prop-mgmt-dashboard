@@ -1,12 +1,9 @@
 import {useState} from 'react'
-import {Dialog} from '@radix-ui/themes'
 import {extractPropertyDeclarationPdf} from '@/api'
+import {useModal} from '@/context'
 import {mapKeys, validateFormData} from '@/util'
 import {Button, FileInput, Input, Select, BulkAdd, ExcelTable} from '@/ui'
 import {PropertySchema, BuildingSchema} from '@/../../schema'
-
-
-const emptyManagerState = {name: '', address: ''}
 
 
 export default function PropertyEditor({
@@ -25,46 +22,45 @@ export default function PropertyEditor({
     onCancel,
 }) {
     const
-        [newManagerType, setNewManagerType] = useState(),
-        [newManager, setNewManager] = useState(emptyManagerState),
-        [managerDialogOpen, setManagerDialogOpen] = useState(false),
-        [declarationFileParseDialogOpen, toggleDeclarationFileParseDialog] = useState(false),
-        [declarationFileParseLoading, toggleDeclarationFileParseLoading] = useState(false),
+        setModalScene = useModal(),
+
         [formErrors, setFormErrors] = useState({}),
 
-        parseDeclarationFile = async () => {
-            if (!value.declaration_file)
+        handleNewDeclarationFile = file => {
+            if (!file)
                 return
 
-            toggleDeclarationFileParseLoading(true)
+            onChange({declaration_file: file})
 
-            const extractedPropRec =
-                await extractPropertyDeclarationPdf(value.declaration_file)
+            setModalScene(DeclarationFileParseDialog, {
+                onCancel: () => setModalScene(null),
 
-            toggleDeclarationFileParseLoading(false)
-            toggleDeclarationFileParseDialog(false)
+                onConfirm: async () => {
+                    setModalScene(() => 'Parsing, can take up to a minute')
 
-            onDeclarationFileParse({
-                file: value.declaration_file,
-                extractedPropRec,
+                    const extractedPropRec =
+                        await extractPropertyDeclarationPdf(file)
+
+                    onDeclarationFileParse({file, extractedPropRec})
+
+                    setModalScene(null)
+                },
             })
         },
 
-        updateNewManager =
-            patch => setNewManager(m => ({...m, ...patch})),
+        openNewManagerDialog = managerType =>
+            setModalScene(NewManagerForm, {
+                title: 'Add ' + (
+                    managerType === 'accountant'
+                        ? 'Accountant'
+                        : 'Property Manager'),
 
-        openNewManagerDialog = managerType => {
-            setNewManagerType(managerType)
-            setManagerDialogOpen(true)
-        },
-
-        createNewManager = () => {
-            const id = onManagerAdd(newManagerType, newManager)
-
-            onChange({[newManagerType + '_id']: id})
-            setNewManager(emptyManagerState)
-            setManagerDialogOpen(false)
-        },
+                onSubmit: managerRec => {
+                    const id = onManagerAdd(managerType, managerRec)
+                    onChange({[managerType + '_id']: id})
+                    setModalScene(null)
+                },
+            }),
 
         handleSubmit = () => {
             const errors = validateFormData(value, PropertySchema)
@@ -92,37 +88,8 @@ export default function PropertyEditor({
                     value={value.declaration_file}
                     placeholder='Upload Teilungserklärung'
                     error={formErrors.declaration_file}
-                    onChange={files => {
-                        onChange({declaration_file: files[0]})
-                        toggleDeclarationFileParseDialog(true)
-                    }}
+                    onChange={files => handleNewDeclarationFile(files[0])}
                 />
-
-                <Dialog.Root
-                    open={declarationFileParseDialogOpen}
-                    onOpenChange={() => toggleDeclarationFileParseDialog(false)}
-                >
-                    <Dialog.Content aria-describedby={undefined}>
-                        {declarationFileParseLoading
-                            ? <Dialog.Title children='Patience' />
-
-                            : <>
-                                <Dialog.Title children='Auto extract?' />
-
-                                <Button
-                                    children='Yes'
-                                    onClick={parseDeclarationFile}
-                                    color='green'
-                                />
-
-                                <Button
-                                    children='No'
-                                    onClick={() => toggleDeclarationFileParseDialog(false)}
-                                    color='red'
-                                />
-                            </>}
-                    </Dialog.Content>
-                </Dialog.Root>
             </li>
 
             <li>
@@ -245,50 +212,47 @@ export default function PropertyEditor({
                     parsed.valid.map(b => ({...b, units: []})))
             }}
         />
-
-        <NewManagerDialog
-            open={managerDialogOpen}
-            onOpenChange={setManagerDialogOpen}
-            title={'Add New ' + newManagerType}
-            value={newManager}
-            onChange={updateNewManager}
-            onSubmit={() => createNewManager(newManagerType)}
-        />
     </>
 }
 
 
 const
-    NewManagerDialog = ({
-        open,
-        onOpenChange,
-        title,
-        value,
-        onChange,
-        onSubmit,
-    }) =>
-        <Dialog.Root
-            open={open}
-            onOpenChange={onOpenChange}
-        >
-            <Dialog.Content aria-describedby={undefined}>
-                <Dialog.Title children={title} />
+    NewManagerForm = ({title, onSubmit}) =>
+        <form onSubmit={e => {
+            e.preventDefault()
 
-                <Input
-                    label='Name'
-                    value={value.name}
-                    onChange={val => onChange({name: val})}
-                />
+            onSubmit({
+                name: e.target.name.value,
+                address: e.target.address.value,
+            })
+        }}>
+            <h3 children={title} />
 
-                <Input
-                    label='Address'
-                    value={value.address}
-                    onChange={val => onChange({address: val})}
-                />
+            <ul className='form'>
+                <li><Input
+                    placeholder='Name'
+                    name='name'
+                    required
+                    autoFocus
+                /></li>
 
-                <Button
-                    children='Add'
-                    onClick={onSubmit}
-                />
-            </Dialog.Content>
-        </Dialog.Root>
+                <li><Input
+                    placeholder='Address'
+                    name='address'
+                    required
+                /></li>
+            </ul>
+
+            <Button
+                children='Add'
+                type='submit'
+            />
+        </form>,
+
+
+    DeclarationFileParseDialog = ({onConfirm, onCancel}) => <>
+        <h3 children='Auto extract?' />
+
+        <Button children='Yes' onClick={onConfirm} />
+        <Button children='No' onClick={onCancel} />
+    </>
