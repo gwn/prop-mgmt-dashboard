@@ -5,14 +5,11 @@ import s from './ui.module.css'
 
 
 const
-    ErrorScene = ({message}) => <>
+    ErrorScene = ({
+        message = 'An error occurred, try refreshing the page',
+    }) => <>
         <h3>Error</h3>
-
-        <p children='
-            An error occurred, please try refreshing the page later.' />
-
-        {message &&
-            <p><strong>{message}</strong></p>}
+        <p children={message} />
     </>,
 
 
