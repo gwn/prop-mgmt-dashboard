@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {mapKeys, updateCollectionItem, validateFormData} from '@/util'
 import {Button, Input, TextArea, Select, BulkAdd, ExcelTable} from '@/ui'
 import {BuildingSchema, UnitSchema} from '@/../../schema'
+import s from './editor.module.css'
 
 
 const emptyUnitState = {
@@ -64,7 +65,7 @@ export default function BuildingEditor({
     return <>
         <h1 children={buildingState.name || 'New Building'} />
 
-        <ul className='form'>
+        <ul className={s.form}>
             <li><Input
                 placeholder='Name'
                 value={buildingState.name}

@@ -5,8 +5,11 @@ import s from './ui.module.css'
 
 
 const
-    Button = props =>
-        <button {...props} />,
+    Button = ({className, ...props}) =>
+        <button
+            className={s.button + ' ' + className}
+            {...props}
+        />,
 
 
     Input = forwardRef((
@@ -24,7 +27,7 @@ const
             ref={ref}
             type={type}
             value={value}
-            className={className + ' ' + (error ? 'error' : '')}
+            className={s.input + ' ' + (error ? s.error : '') + ' ' + className}
             title={error}
             onChange={e =>
                 onChange(
@@ -54,10 +57,11 @@ const
             triggerInput = () => inputRef.current?.click()
 
         return <>
-            <button
+            <Button
                 children={value ? value.name : placeholder}
                 onClick={triggerInput}
-                className={className + ' fileWidget ' + (error ? 'error' : '')}
+                className={
+                    s.fileInput + ' ' + (error ? s.error : '') + ' ' + className}
             />
 
             <input
@@ -92,7 +96,8 @@ const
                         : e.target.value,
                 )
             }
-            className={className + ' ' + (error ? 'error' : '')}
+            className={
+                s.textarea + ' ' + (error ? s.error : '') + ' ' + className}
             title={error}
             {...props}
         />,
@@ -111,7 +116,8 @@ const
         <select
             value={value}
             onChange={e => onChange(e.target.value)}
-            className={className + ' ' + (error ? 'error' : '')}
+            className={
+                s.select + ' ' + (error ? s.error : '') + ' ' + className}
             title={error}
             {...props}
         >
@@ -200,7 +206,7 @@ const
                     <p key={row}>
                         Row: {row}
 
-                        <ul className='bare'>
+                        <ul style={{listStyleType: 'none'}}>
                             {errors.map(([fName, errMsg]) =>
                                 <li key={fName}>
                                     <strong>{fName}</strong>: {errMsg}
@@ -245,7 +251,7 @@ const
 
         return <>
             {items.length > 0 &&
-                <table className='excel'>
+                <table className={s.excel}>
                     <thead>
                         <tr>
                             <th/>
@@ -263,7 +269,7 @@ const
 
                             {schema.map(([fTitle, type, size, fName], fieldIdx) =>
                                 <td key={fTitle}
-                                    className={size}
+                                    className={s[size]}
                                 >
                                     {typeof fName === 'function'
                                         ? fName(item, itemIdx)

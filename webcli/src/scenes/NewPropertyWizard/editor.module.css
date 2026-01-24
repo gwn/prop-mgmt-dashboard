@@ -1,0 +1,15 @@
+ul.form {
+    position: relative;
+    right: -20px;
+    list-style-type: none;
+    width: 450px;
+    margin: auto;
+    padding: 0;
+    text-align: left;
+}
+ul.form input,
+ul.form select,
+ul.form textarea,
+ul.form .teilung {
+    width: 350px;
+}

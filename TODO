@@ -1,8 +1,8 @@
+- Excel table buttons broken
 - Implement detailed property listing
 - Error handling (especially for net ops)
-- Filtering sorting pagination
-- CSS Reset
-- Better CSS with CSS modules
 - TODOs in code
 - Lint and refactor all for the last time
 - QA
+- Filtering sorting pagination
+- Mobile compatibility

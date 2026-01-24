@@ -4,6 +4,7 @@ import {useModal} from '@/context'
 import {mapKeys, validateFormData} from '@/util'
 import {Button, FileInput, Input, Select, BulkAdd, ExcelTable} from '@/ui'
 import {PropertySchema, BuildingSchema} from '@/../../schema'
+import s from './editor.module.css'
 
 
 export default function PropertyEditor({
@@ -82,9 +83,10 @@ export default function PropertyEditor({
     return <>
         <h1>{value.name || 'New Property'}</h1>
 
-        <ul className='form'>
+        <ul className={s.form}>
             <li>
                 <FileInput
+                    className={s.teilung}
                     value={value.declaration_file}
                     placeholder='Upload Teilungserklärung'
                     error={formErrors.declaration_file}
