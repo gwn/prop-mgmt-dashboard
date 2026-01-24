@@ -1,7 +1,7 @@
 import {useState, useRef} from 'react'
-import {Button, Dialog} from '@radix-ui/themes'
+import {Dialog} from '@radix-ui/themes'
 import {extractPropertyDeclarationPdf} from '@/api'
-import {FileInput} from '@/ui'
+import {Button, FileInput} from '@/ui'
 
 
 export default function DeclarationFileEditor({

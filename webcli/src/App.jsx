@@ -1,7 +1,6 @@
 import {useState} from 'react'
-import {Button} from '@radix-ui/themes'
-import {keyBy} from 'lodash'
-import {readFile} from '@/util'
+import {keyBy, readFile} from '@/util'
+import {Button} from '@/ui'
 import {createProperty} from './api'
 import PropertyListing from './scenes/PropertyListing'
 import NewPropertyWizard from './scenes/NewPropertyWizard'
@@ -54,37 +53,21 @@ export default function App({
             toggleWizard(true)
         }
 
-    return <>
-        <Button
-            onClick={() => toggleWizard(false)}
-            children='Listing'
-            color={wizardOpen ? 'gray' : 'blue'}
+    return wizardOpen
+        ? <NewPropertyWizard
+            propManagers={propManagers_}
+            accountants={accountants_}
+            onManagerAdd={handleManagerAdd}
+            onSubmit={handleWizardSubmit}
+            onCancel={() => toggleWizard(false)}
+            initState={properties_[editedPropertyIdx]}
+            initScene={editedPropertyIdx > -1 ? 'PropertyEditor' : null}
         />
 
-        <Button
-            onClick={() => handlePropertyEditRequest(-1)}
-            children='Add New'
-            color={wizardOpen ? 'blue' : 'gray'}
+        : <PropertyListing
+            items={properties_}
+            onEditRequest={handlePropertyEditRequest}
         />
-
-        <hr />
-
-        {wizardOpen
-            ? <NewPropertyWizard
-                propManagers={propManagers_}
-                accountants={accountants_}
-                onManagerAdd={handleManagerAdd}
-                onSubmit={handleWizardSubmit}
-                onCancel={() => toggleWizard(false)}
-                initState={properties_[editedPropertyIdx]}
-                initScene={editedPropertyIdx > -1 ? 'PropertyEditor' : null}
-            />
-
-            : <PropertyListing
-                items={properties_}
-                onEditRequest={handlePropertyEditRequest}
-            />}
-    </>
 }
 
 

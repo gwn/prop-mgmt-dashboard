@@ -1,9 +1,13 @@
 import {forwardRef, useState, useRef} from 'react'
-import {Select, Button, Dialog} from '@radix-ui/themes'
+import {Dialog} from '@radix-ui/themes'
 import {readFile, parseAndValidateCSV} from '@/util'
 
 
 const
+    Button = props =>
+        <button {...props} />,
+
+
     Input = forwardRef((
         {
             type = 'text',
@@ -37,21 +41,33 @@ const
         {
             value,
             error,
+            placeholder = 'Upload',
             onChange,
             className = '',
             ...props
         },
         ref,
-    ) =>
-        <input
-            ref={ref}
-            type='file'
-            value={value}
-            onChange={e => onChange(e.target.files)}
-            className={className + ' ' + (error ? 'error' : '')}
-            {...props}
-        />,
-    ),
+    ) => {
+        const
+            inputRef = ref || useRef(),
+            triggerInput = () => inputRef.current?.click()
+
+        return <>
+            <button
+                children={value ? value.name : placeholder}
+                onClick={triggerInput}
+                className={className + ' fileWidget ' + (error ? 'error' : '')}
+            />
+
+            <input
+                ref={inputRef}
+                type='file'
+                onChange={e => onChange(e.target.files)}
+                style={{display: 'none'}}
+                {...props}
+            />,
+        </>
+    }),
 
 
     TextArea = forwardRef((
@@ -82,7 +98,7 @@ const
     ),
 
 
-    Select_ = ({
+    Select = ({
         placeholder = '',
         opts,
         value,
@@ -91,36 +107,32 @@ const
         error,
         ...props
     }) =>
-        <Select.Root
+        <select
             value={value}
-            onValueChange={onChange}
+            onChange={e => onChange(e.target.value)}
             className={className + ' ' + (error ? 'error' : '')}
+            title={error}
             {...props}
         >
-            <Select.Trigger
-                placeholder={placeholder}
-                style={{border: error ? '2px solid red' : 'none'}}
+            <option
+                value=''
+                children={placeholder}
+                disabled
+                hidden
             />
 
-            <Select.Content>
-                {Object.entries(opts).map(([title, val]) =>
-                    <Select.Item
-                        key={title}
-                        value={val}
-                        children={title}
-                    />)}
-            </Select.Content>
-        </Select.Root>,
+            {Object.entries(opts).map(([title, val]) =>
+                <option
+                    key={title}
+                    value={val}
+                    children={title}
+                />)}
+        </select>,
 
 
     BulkAdd = ({jsonSchema, onComplete}) => {
         const
-            bulkAddElemRef = useRef(),
-
             [bulkAddResult, setBulkAddResult] = useState(null),
-
-            triggerBulkAddFileWidget = () =>
-                bulkAddElemRef.current?.click(),
 
             handleBulkAdd = async files => {
                 if (!files[0])
@@ -136,16 +148,10 @@ const
             }
 
         return <>
-            <Button
-                children='Import'
-                onClick={triggerBulkAddFileWidget}
-            />
-
             <FileInput
-                ref={bulkAddElemRef}
                 accept='text/csv'
+                placeholder='Import'
                 onChange={handleBulkAdd}
-                style={{display: 'none'}}
             />
 
             <Dialog.Root
@@ -288,16 +294,17 @@ const
 Input.displayName = 'Input'
 FileInput.displayName = 'FileInput'
 TextArea.displayName = 'TextArea'
-Select_.displayName = 'Select'
+Select.displayName = 'Select'
 BulkAdd.displayName = 'BulkAdd'
 ExcelTable.displayName = 'ExcelTable'
 
 
 export {
+    Button,
     Input,
     FileInput,
     TextArea,
-    Select_ as Select,
+    Select,
     BulkAdd,
     ExcelTable,
 }

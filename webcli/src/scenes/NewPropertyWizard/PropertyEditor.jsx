@@ -1,8 +1,8 @@
 import {useState} from 'react'
-import {Button, Dialog} from '@radix-ui/themes'
-import {mapKeys} from 'lodash'
-import {validateFormData} from '@/util'
-import {Input, Select, BulkAdd, ExcelTable} from '@/ui'
+import {Dialog} from '@radix-ui/themes'
+import {extractPropertyDeclarationPdf} from '@/api'
+import {mapKeys, validateFormData} from '@/util'
+import {Button, FileInput, Input, Select, BulkAdd, ExcelTable} from '@/ui'
 import {PropertySchema, BuildingSchema} from '@/../../schema'
 
 
@@ -12,6 +12,7 @@ const emptyManagerState = {name: '', address: ''}
 export default function PropertyEditor({
     value,
     onChange,
+    onDeclarationFileParse,
     onBuildingChange,
     propManagers = [],
     accountants = [],
@@ -27,7 +28,27 @@ export default function PropertyEditor({
         [newManagerType, setNewManagerType] = useState(),
         [newManager, setNewManager] = useState(emptyManagerState),
         [managerDialogOpen, setManagerDialogOpen] = useState(false),
+        [declarationFileParseDialogOpen, toggleDeclarationFileParseDialog] = useState(false),
+        [declarationFileParseLoading, toggleDeclarationFileParseLoading] = useState(false),
         [formErrors, setFormErrors] = useState({}),
+
+        parseDeclarationFile = async () => {
+            if (!value.declaration_file)
+                return
+
+            toggleDeclarationFileParseLoading(true)
+
+            const extractedPropRec =
+                await extractPropertyDeclarationPdf(value.declaration_file)
+
+            toggleDeclarationFileParseLoading(false)
+            toggleDeclarationFileParseDialog(false)
+
+            onDeclarationFileParse({
+                file: value.declaration_file,
+                extractedPropRec,
+            })
+        },
 
         updateNewManager =
             patch => setNewManager(m => ({...m, ...patch})),
@@ -65,94 +86,116 @@ export default function PropertyEditor({
     return <>
         <h1>{value.name || 'New Property'}</h1>
 
-        <table className='summary'><tbody>
-            <tr>
-                <th>Property Name</th>
-                <td>
-                    <Input
-                        value={value.name}
-                        onChange={val => onChange({name: val})}
-                        className={formErrors.name && 'error'}
-                        error={formErrors.name}
-                    />
-                </td>
-            </tr>
+        <ul className='form'>
+            <li>
+                <FileInput
+                    value={value.declaration_file}
+                    placeholder='Upload Teilungserklärung'
+                    error={formErrors.declaration_file}
+                    onChange={files => {
+                        onChange({declaration_file: files[0]})
+                        toggleDeclarationFileParseDialog(true)
+                    }}
+                />
 
-            <tr>
-                <th>Unique Number</th>
-                <td>
-                    <Input
-                        value={value.unique_number}
-                        onChange={val => onChange({unique_number: val})}
-                        className={formErrors.unique_number && 'error'}
-                        error={formErrors.unique_number}
-                    />
-                </td>
-            </tr>
+                <Dialog.Root
+                    open={declarationFileParseDialogOpen}
+                    onOpenChange={() => toggleDeclarationFileParseDialog(false)}
+                >
+                    <Dialog.Content aria-describedby={undefined}>
+                        {declarationFileParseLoading
+                            ? <Dialog.Title children='Patience' />
 
-            <tr>
-                <th>Management Type</th>
-                <td>
-                    <Select
-                        opts={{WEG: 'weg', MV: 'mv'}}
-                        value={value.management_type}
-                        onChange={val => onChange({management_type: val})}
-                        error={formErrors.management_type}
-                    />
-                </td>
-            </tr>
+                            : <>
+                                <Dialog.Title children='Auto extract?' />
 
-            <tr>
-                <th>Total MEA</th>
-                <td>
-                    <Input
-                        type='number'
-                        value={value.total_mea}
-                        onChange={val => onChange({total_mea: val})}
-                        error={formErrors.total_mea}
-                    />
-                </td>
-            </tr>
+                                <Button
+                                    children='Yes'
+                                    onClick={parseDeclarationFile}
+                                    color='green'
+                                />
 
-            <tr>
-                <th>Property Manager</th>
-                <td>
-                    <Select
-                        placeholder='Select'
-                        value={value.property_manager_id}
-                        onChange={val => onChange({property_manager_id: val})}
-                        error={formErrors.property_manager_id}
-                        opts={Object.fromEntries(
-                            propManagers.map(pm => [pm.name, pm.id]))}
-                    />
+                                <Button
+                                    children='No'
+                                    onClick={() => toggleDeclarationFileParseDialog(false)}
+                                    color='red'
+                                />
+                            </>}
+                    </Dialog.Content>
+                </Dialog.Root>
+            </li>
 
-                    <Button
-                        children='Add New'
-                        onClick={() =>
-                            openNewManagerDialog('property_manager')}
-                    />
-                </td>
-            </tr>
+            <li>
+                <Input
+                    placeholder='Property Name'
+                    value={value.name}
+                    error={formErrors.name}
+                    onChange={val => onChange({name: val})}
+                />
+            </li>
 
-            <tr>
-                <th>Accountant</th>
-                <td>
-                    <Select
-                        placeholder='Select'
-                        value={value.accountant_id}
-                        onChange={val => onChange({accountant_id: val})}
-                        error={formErrors.accountant_id}
-                        opts={Object.fromEntries(
-                            accountants.map(a => [a.name, a.id]))}
-                    />
+            <li>
+                <Input
+                    placeholder='Unique Number'
+                    value={value.unique_number}
+                    error={formErrors.unique_number}
+                    onChange={val => onChange({unique_number: val})}
+                />
+            </li>
 
-                    <Button
-                        children='Add New'
-                        onClick={() => openNewManagerDialog('accountant')}
-                    />
-                </td>
-            </tr>
-        </tbody></table>
+            <li>
+                <Select
+                    opts={{WEG: 'weg', MV: 'mv'}}
+                    placeholder='Management Type'
+                    value={value.management_type}
+                    error={formErrors.management_type}
+                    onChange={val => onChange({management_type: val})}
+                />
+            </li>
+
+            <li>
+                <Input
+                    placeholder='Total MEA'
+                    type='number'
+                    value={value.total_mea}
+                    error={formErrors.total_mea}
+                    onChange={val => onChange({total_mea: val})}
+                />
+            </li>
+
+            <li>
+                <Select
+                    placeholder='Property Manager'
+                    value={value.property_manager_id}
+                    error={formErrors.property_manager_id}
+                    onChange={val => onChange({property_manager_id: val})}
+                    opts={Object.fromEntries(
+                        propManagers.map(pm => [pm.name, pm.id]))}
+                />
+
+                <Button
+                    children='&nbsp;+&nbsp;'
+                    onClick={() =>
+                        openNewManagerDialog('property_manager')}
+                />
+            </li>
+
+            <li>
+                <Select
+                    placeholder='Accountant'
+                    value={value.accountant_id}
+                    error={formErrors.accountant_id}
+                    onChange={val => onChange({accountant_id: val})}
+                    opts={Object.fromEntries(
+                        accountants.map(a => [a.name, a.id]))}
+                />
+
+                <Button
+                    children='&nbsp;+&nbsp;'
+                    onClick={() => openNewManagerDialog('accountant')}
+                />
+            </li>
+        </ul>
 
         <hr />
 
@@ -161,6 +204,7 @@ export default function PropertyEditor({
             onClick={handleSubmit}
             color='green'
         />
+
         <Button
             children='Cancel'
             onClick={onCancel}
@@ -210,7 +254,6 @@ export default function PropertyEditor({
             onChange={updateNewManager}
             onSubmit={() => createNewManager(newManagerType)}
         />
-
     </>
 }
 

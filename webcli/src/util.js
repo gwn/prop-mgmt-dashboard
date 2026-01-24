@@ -3,6 +3,37 @@ import Papa from 'papaparse'
 
 
 const
+    mapKeys = (obj, mapper) =>
+        Object.fromEntries(
+            Object.entries(obj)
+                .map(([k, v]) => [mapper(v, k), v])),
+
+    groupBy = (collection, keySelector) =>
+        collection.reduce(
+            (grouped, item) => {
+                const key =
+                    typeof keySelector === 'function'
+                        ? keySelector(item)
+                        : item[keySelector]
+
+                if (!grouped[key])
+                    grouped[key] = []
+
+                grouped[key].push(item)
+
+                return grouped
+            },
+            {},
+        ),
+
+    keyBy = (collection, keySelector) =>
+        Object.fromEntries(
+            Object.entries(
+                groupBy(collection, keySelector),
+            )
+                .map(([k ,v]) => [k, v[0]]),
+        ),
+
     updateCollectionItem = (coll, targetItemIdx, patch) =>
         [
             ...coll.slice(0, targetItemIdx),
@@ -31,6 +62,22 @@ const
 
             reader[method](file)
         })
+    },
+
+
+    base64ToFile = (base64String, filename, mimeType) => {
+        const
+            base64 = base64String.split(',')[1] || base64String,
+            byteString = atob(base64),
+            ab = new ArrayBuffer(byteString.length),
+            ia = new Uint8Array(ab)
+
+        for (let i = 0; i < byteString.length; i++)
+            ia[i] = byteString.charCodeAt(i)
+
+        const blob = new Blob([ab], {type: mimeType})
+
+        return new File([blob], filename, {type: mimeType})
     },
 
 
@@ -101,8 +148,12 @@ const
 
 
 export {
+    mapKeys,
+    groupBy,
+    keyBy,
     updateCollectionItem,
     readFile,
+    base64ToFile,
     validateFormData,
     parseAndValidateCSV,
 }

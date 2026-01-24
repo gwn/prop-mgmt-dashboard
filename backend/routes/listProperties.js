@@ -1,5 +1,5 @@
 const
-    {keyBy, groupBy} = require('lodash'),
+    {groupBy, keyBy} = require('../util'),
     {getDB} = require('../db'),
     {PropertySchema} = require('../../schema')
 

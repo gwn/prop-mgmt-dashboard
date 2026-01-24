@@ -1,8 +1,6 @@
 import {useState} from 'react'
-import {Button} from '@radix-ui/themes'
-import {mapKeys} from 'lodash'
-import {updateCollectionItem, validateFormData} from '@/util'
-import {Input, TextArea, Select, BulkAdd, ExcelTable} from '@/ui'
+import {mapKeys, updateCollectionItem, validateFormData} from '@/util'
+import {Button, Input, TextArea, Select, BulkAdd, ExcelTable} from '@/ui'
 import {BuildingSchema, UnitSchema} from '@/../../schema'
 
 
@@ -66,58 +64,43 @@ export default function BuildingEditor({
     return <>
         <h1 children={buildingState.name || 'New Building'} />
 
-        <table className='summary'><tbody>
-            <tr>
-                <th>Name</th>
+        <ul className='form'>
+            <li><Input
+                placeholder='Name'
+                value={buildingState.name}
+                onChange={val => updateBuilding({name: val})}
+                error={formErrors.name}
+            /></li>
 
-                <td><Input
-                    value={buildingState.name}
-                    onChange={val => updateBuilding({name: val})}
-                    error={formErrors.name}
-                /></td>
-            </tr>
+            <li><Input
+                placeholder='Street'
+                value={buildingState.street}
+                onChange={val => updateBuilding({street: val})}
+                error={formErrors.street}
+            /></li>
 
-            <tr>
-                <th>Street</th>
+            <li><Input
+                placeholder='House Number'
+                value={buildingState.house_number}
+                onChange={val => updateBuilding({house_number: val})}
+                error={formErrors.house_number}
+            /></li>
 
-                <td><Input
-                    value={buildingState.street}
-                    onChange={val => updateBuilding({street: val})}
-                    error={formErrors.street}
-                /></td>
-            </tr>
+            <li><Input
+                placeholder='Construction Year'
+                type='number'
+                value={buildingState.construction_year}
+                onChange={val => updateBuilding({construction_year: val})}
+                error={formErrors.construction_year}
+            /></li>
 
-            <tr>
-                <th>House Number</th>
-
-                <td><Input
-                    value={buildingState.house_number}
-                    onChange={val => updateBuilding({house_number: val})}
-                    error={formErrors.house_number}
-                /></td>
-            </tr>
-
-            <tr>
-                <th>Construction Year</th>
-
-                <td><Input
-                    type='number'
-                    value={buildingState.construction_year}
-                    onChange={val => updateBuilding({construction_year: val})}
-                    error={formErrors.construction_year}
-                /></td>
-            </tr>
-
-            <tr>
-                <th>Description</th>
-
-                <td><TextArea
-                    value={buildingState.description}
-                    onChange={val => updateBuilding({description: val})}
-                    error={formErrors.description}
-                /></td>
-            </tr>
-        </tbody></table>
+            <li><TextArea
+                placeholder='Description'
+                value={buildingState.description}
+                onChange={val => updateBuilding({description: val})}
+                error={formErrors.description}
+            /></li>
+        </ul>
 
         <Button
             children='Save'

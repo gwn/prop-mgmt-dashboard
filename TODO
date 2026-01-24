@@ -1,10 +1,8 @@
 Required:
 
+- Implement detailed property listing
+- Implement property editing: Backend
 - Beautify
 - TODOs in code
+- Get rid of Radix
 - QA
-
-Optional:
-- Implement detailed property listing
-- Implement property editing
-- Get rid of Lodash

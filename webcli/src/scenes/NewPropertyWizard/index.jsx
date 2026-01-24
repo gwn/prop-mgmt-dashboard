@@ -1,6 +1,5 @@
 import {useState} from 'react'
-import {updateCollectionItem} from '@/util'
-import DeclarationFileEditor from './DeclarationFileEditor'
+import {base64ToFile, updateCollectionItem} from '@/util'
 import PropertyEditor from './PropertyEditor'
 import BuildingEditor from './BuildingEditor'
 
@@ -9,10 +8,10 @@ const
     emptyPropState = {
         name: '',
         unique_number: '',
-        management_type: 'weg',
+        management_type: '',
         total_mea: '',
-        property_manager_id: null,
-        accountant_id: null,
+        property_manager_id: '',
+        accountant_id: '',
         declaration_file: undefined, // File object
         buildings: [],
     },
@@ -32,13 +31,11 @@ export default function NewPropertyWizard({
     accountants = [],
     onManagerAdd,
     initState,
-    initScene,
     onSubmit,
     onCancel,
 }) {
     const
-        [activeSceneName, setActiveScene] =
-            useState(initScene || 'DeclarationFileEditor'),
+        [activeSceneName, setActiveScene] = useState('PropertyEditor'),
 
         [propState, setPropState] =
             useState(
@@ -47,6 +44,7 @@ export default function NewPropertyWizard({
                         ...initState,
                         property_manager_id: initState.property_manager_id || initState.property_manager.id,
                         accountant_id: initState.accountant_id || initState.accountant.id,
+                        declaration_file: initState.declaration_file instanceof File ? initState.declaration_file : base64ToFile(initState.declaration_file, 'declarationFile.pdf', 'application/pdf'),
                     }
 
                     : emptyPropState,
@@ -129,22 +127,14 @@ export default function NewPropertyWizard({
             propRec.declaration_file = file
 
             setPropState(propRec)
-
-            setActiveScene('PropertyEditor')
         }
 
     return <>
-        {activeSceneName === 'DeclarationFileEditor' &&
-            <DeclarationFileEditor
-                value={propState.declaration_form}
-                onChange={updateDeclarationFile}
-                onCancel={() => setActiveScene('PropertyEditor')}
-            />}
-
         {activeSceneName === 'PropertyEditor' &&
             <PropertyEditor
                 value={propState}
                 onChange={updateProp}
+                onDeclarationFileParse={updateDeclarationFile}
                 onBuildingChange={updateBuilding}
                 propManagers={propManagers}
                 accountants={accountants}

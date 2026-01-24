@@ -10,9 +10,44 @@ input[type="number"] {
   -moz-appearance: textfield;     /* turns it into a normal text field */
 }
 
+input {
+
+}
+
+input,
+select,
+button {
+    height: 1.2em;
+}
+input, select, button, textarea {
+    margin: .5em;
+    padding: .5em;
+    box-sizing: content-box;
+}
+textarea {
+  min-height: 100px;
+}
+
 input.error,
-textarea.error {
+textarea.error,
+select.error {
   border: 1px solid red !important;
+}
+
+ul.form {
+    position: relative;
+    right: -20px;
+    list-style-type: none;
+    width: 430px;
+    margin: auto;
+    padding: 0;
+    text-align: left;
+}
+ul.form input,
+ul.form select,
+ul.form textarea,
+ul.form button.fileWidget {
+    width: 350px;
 }
 
 body {
