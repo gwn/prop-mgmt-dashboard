@@ -1,8 +1,9 @@
-Required:
-
-- Implement detailed property listing
 - Implement property editing: Backend
-- Beautify
-- TODOs in code
 - Get rid of Radix
+- Implement detailed property listing
+- Error handling (especially for net ops)
+- Filtering sorting pagination
+- Better CSS with CSS modules
+- TODOs in code
+- Lint and refactor all for the last time
 - QA

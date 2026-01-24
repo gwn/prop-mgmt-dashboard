@@ -38,7 +38,7 @@ const
         type: 'object',
         required: [
             'name', 'street', 'house_number', 'construction_year',
-            'description',
+            'description', 'units',
         ],
         properties: {
             id: {type: 'integer'},
@@ -47,7 +47,7 @@ const
             house_number: {type: 'string', minLength: 1},
             construction_year: {type: 'integer', minimum: 1000},
             description: {type: 'string'},
-            units: {type: 'array', items: UnitSchema},
+            units: {type: 'array', items: UnitSchema, default: []},
         },
     },
 

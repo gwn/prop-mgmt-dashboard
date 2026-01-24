@@ -27,6 +27,14 @@ const
             body: JSON.stringify(data),
         }),
 
+    editProperty = (id, data) =>
+        apiFetch({
+            path: '/properties/' + id,
+            method: 'put',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify(data),
+        }),
+
     extractPropertyDeclarationPdf = pdfFile => {
         const formData = new FormData()
         formData.append('pdfFile', pdfFile)
@@ -44,5 +52,6 @@ export {
     getAccountants,
     getProperties,
     createProperty,
+    editProperty,
     extractPropertyDeclarationPdf,
 }

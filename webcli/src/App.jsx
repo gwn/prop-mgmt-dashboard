@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {keyBy, readFile} from '@/util'
 import {Button} from '@/ui'
-import {createProperty} from './api'
+import {createProperty, editProperty} from './api'
 import PropertyListing from './scenes/PropertyListing'
 import NewPropertyWizard from './scenes/NewPropertyWizard'
 
@@ -41,9 +41,12 @@ export default function App({
             const serialized =
                 await serializePropRec(propRec, propManagers_, accountants_)
 
-            await createProperty(serialized)
-
-            setProperties(prev => [...prev, propRec])
+            if (propRec.id)
+                await editProperty(propRec.id, propRec)
+            else {
+                await createProperty(serialized)
+                setProperties(prev => [...prev, propRec])
+            }
 
             toggleWizard(false)
         },
