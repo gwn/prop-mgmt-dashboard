@@ -1,5 +1,5 @@
 import {createContext, useContext, useState} from 'react'
-import {Modal} from './ui'
+import {Modal, Confirm} from './ui'
 
 
 const
@@ -31,10 +31,28 @@ const
                 children={children}
             />
         </>
+    },
+
+
+    useConfirm = () => {
+        const setModalScene = useModal()
+
+        return (onConfirm, onCancel = ()=>{}) =>
+            setModalScene(Confirm, {
+                onConfirm: () => {
+                    setModalScene(null)
+                    onConfirm()
+                },
+                onCancel: () => {
+                    setModalScene(null)
+                    onCancel()
+                },
+            })
     }
 
 
 export {
     ModalProvider,
     useModal,
+    useConfirm,
 }

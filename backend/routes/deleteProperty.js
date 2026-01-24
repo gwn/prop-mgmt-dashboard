@@ -1,22 +1,18 @@
-const
-    {getDB} = require('../db'),
-    upsertProperty = require('../upsertProperty'),
-    {PropertySchema} = require('../../schema')
+const {getDB} = require('../db')
 
 
 module.exports = {
     url: '/properties/:id',
-    method: 'put',
+    method: 'delete',
 
     schema: {
-        description: 'Update property',
+        description: 'Delete property',
         params: {
             type: 'object',
             properties: {
                 id: {type: 'integer'},
             },
         },
-        body: PropertySchema,
         response: {
             204: {type: 'null'},
         },
@@ -25,10 +21,7 @@ module.exports = {
     handler: async (req, rep) => {
         const db = await getDB()
 
-        await upsertProperty(db, {
-            id: req.params.id,
-            ...req.body,
-        })
+        await db.properties.destroy({id: req.params.id})
 
         rep.status(204).send(null)
     },

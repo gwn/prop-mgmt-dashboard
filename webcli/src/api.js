@@ -7,7 +7,10 @@ const
         if (!res.ok)
             throw new Error('Fetching failed', res)
 
-        return res.json()
+        if (res.status === 204)
+            return null
+        else
+            return res.json()
     },
 
     getPropertyManagers = () =>
@@ -35,6 +38,12 @@ const
             body: JSON.stringify(data),
         }),
 
+    deleteProperty = id =>
+        apiFetch({
+            path: '/properties/' + id,
+            method: 'delete',
+        }),
+
     extractPropertyDeclarationPdf = pdfFile => {
         const formData = new FormData()
         formData.append('pdfFile', pdfFile)
@@ -53,5 +62,6 @@ export {
     getProperties,
     createProperty,
     editProperty,
+    deleteProperty,
     extractPropertyDeclarationPdf,
 }

@@ -16,7 +16,7 @@ const
 
         app.register(fastifyCORS, {
             origin: WEBCLI_URL,
-            methods: ['GET', 'HEAD', 'POST', 'PUT'],
+            methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
         })
 
         await app.register(fastifySwagger, {openapi: {info: {docTitle}}})

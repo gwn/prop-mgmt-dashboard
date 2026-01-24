@@ -164,6 +164,16 @@ const
     },
 
 
+    Confirm = ({onConfirm, onCancel}) => <>
+        <p>Are you sure?</p>
+
+        <p>
+            <Button children='Yes' onClick={onConfirm} />
+            <Button children='No' onClick={onCancel} />
+        </p>
+    </>,
+
+
     BulkAdd = ({jsonSchema, onComplete}) => {
         const
             setModalScene = useModal(),
@@ -335,6 +345,7 @@ export {
     TextArea,
     Select,
     Modal,
+    Confirm,
     BulkAdd,
     ExcelTable,
 }

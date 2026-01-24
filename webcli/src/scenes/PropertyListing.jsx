@@ -1,10 +1,19 @@
+import {useConfirm} from '@/context'
 import {Button} from '@/ui'
 
 
 export default function PropertyListing({
     items = [],
     onEditRequest,
+    onDeleteRequest,
 }) {
+    const
+        confirm = useConfirm(),
+
+        handleDeleteRequest = propIdx =>
+            confirm(() =>
+                onDeleteRequest(propIdx))
+
     return <>
         <h1>All Properties</h1>
 
@@ -19,6 +28,7 @@ export default function PropertyListing({
                         <th>B</th>
                         <th>U</th>
                         <th>Zoom</th>
+                        <th>Del</th>
                     </tr>
                 </thead>
 
@@ -32,6 +42,12 @@ export default function PropertyListing({
                             <Button
                                 children='>'
                                 onClick={() => onEditRequest(idx)}
+                            />
+                        </td>
+                        <td>
+                            <Button
+                                children='x'
+                                onClick={() => handleDeleteRequest(idx)}
                             />
                         </td>
                     </tr>,

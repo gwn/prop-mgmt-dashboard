@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {clone, keyBy, readFile, updateCollectionItem} from '@/util'
-import {createProperty, editProperty} from './api'
+import {createProperty, editProperty, deleteProperty} from './api'
 import {ModalProvider} from './context'
 import PropertyListing from './scenes/PropertyListing'
 import NewPropertyWizard from './scenes/NewPropertyWizard'
@@ -60,6 +60,15 @@ export default function App({
         handlePropertyEditRequest = propIdx => {
             setEditedPropertyIdx(propIdx)
             toggleWizard(true)
+        },
+
+        handlePropertyDeleteRequest = async propIdx => {
+            await deleteProperty(properties[propIdx].id)
+
+            setProperties(prev => [
+                ...prev.slice(0, propIdx),
+                ...prev.slice(propIdx + 1),
+            ])
         }
 
     return (
@@ -78,6 +87,7 @@ export default function App({
                 : <PropertyListing
                     items={properties_}
                     onEditRequest={handlePropertyEditRequest}
+                    onDeleteRequest={handlePropertyDeleteRequest}
                 />}
         </ModalProvider>
     )
