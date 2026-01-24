@@ -34,7 +34,7 @@ export default function PropertyListing({
                 </thead>
 
                 <tbody>{items.map((prop, idx) =>
-                    <tr key={prop.id}>
+                    <tr key={idx}>
                         <th children={prop.name} />
                         <td children={prop.unique_number} />
                         <td children={prop.buildings.length} />
