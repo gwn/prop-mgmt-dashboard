@@ -1,6 +1,6 @@
 # gwn's simple property management dashboard for Buena
 
-## What is this
+## Project Info
 
 See the requirement and technical specs under the `meta` folder.
 
