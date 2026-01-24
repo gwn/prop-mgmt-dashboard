@@ -1,0 +1,16 @@
+table.listing thead th {
+    font-size: 10px;
+}
+table.listing tbody th {
+    text-align: right;
+}
+table.listing tbody th,
+table.listing tbody td {
+    padding: 0 10px;
+}
+table.listing td.btn {
+    padding: 0;
+}
+table.listing td.btn button {
+    margin: 0;
+}

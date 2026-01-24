@@ -1,5 +1,6 @@
 import {useConfirm} from '@/context'
 import {Button} from '@/ui'
+import s from './listing.module.css'
 
 
 export default function PropertyListing({
@@ -20,7 +21,7 @@ export default function PropertyListing({
         <hr />
 
         {items.length > 0 && <>
-            <table className='listing'>
+            <table className={s.listing}>
                 <thead>
                     <tr>
                         <th></th>
@@ -38,13 +39,13 @@ export default function PropertyListing({
                         <td children={prop.unique_number} />
                         <td children={prop.buildings.length} />
                         <td children={calcTotalUnits(prop)} />
-                        <td>
+                        <td className={s.btn}>
                             <Button
                                 children='>'
                                 onClick={() => onEditRequest(idx)}
                             />
                         </td>
-                        <td>
+                        <td className={s.btn}>
                             <Button
                                 children='x'
                                 onClick={() => handleDeleteRequest(idx)}
