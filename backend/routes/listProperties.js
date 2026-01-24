@@ -42,7 +42,7 @@ module.exports = {
 
             p.property_manager = pmsById[p.property_manager_id]
             p.accountant = accsById[p.accountant_id]
-            p.buildings = bldsByPropId[p.id]
+            p.buildings = bldsByPropId[p.id] || []
 
             p.buildings.forEach(b => {
                 b.units = unitsByBldId[b.id]
