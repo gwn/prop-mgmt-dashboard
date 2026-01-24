@@ -80,7 +80,8 @@ export default function PropertyEditor({
         handleSubmit = () => {
             const errors = validateFormData(value, PropertySchema)
 
-            delete errors.declaration_file // TODO
+            delete errors.declaration_file
+            // ^TODO: Might be a better way to handle
 
             if (!value.property_manager_id)
                 errors.property_manager_id = 'Property manager is required'
