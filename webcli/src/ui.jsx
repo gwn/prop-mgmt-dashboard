@@ -110,7 +110,7 @@ const
                 onChange={e => onChange(e.target.files)}
                 style={{display: 'none'}}
                 {...props}
-            />,
+            />
         </>
     }),
 
