@@ -2,6 +2,12 @@
 
 ## Project Info
 
+This is a simple property management dashboard designed for
+efficiency.
+
+[Check out the demo
+here](https://www.loom.com/share/7db8585a6fa649beb4bbbd3188b25749)
+
 See the requirement and technical specs under the `meta` folder.
 
 
