@@ -235,7 +235,7 @@ const
         }}>
             <h3 children={title} />
 
-            <ul style={{listStyleType: 'none'}}>
+            <ul style={{listStyleType: 'none', padding: 0}}>
                 <li><Input
                     placeholder='Name'
                     name='name'

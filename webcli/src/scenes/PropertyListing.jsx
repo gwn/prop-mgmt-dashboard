@@ -16,11 +16,11 @@ export default function PropertyListing({
                 onDeleteRequest(propIdx))
 
     return <>
-        <h1>All Properties</h1>
-
-        <hr />
-
         {items.length > 0 && <>
+            <h1>All Properties</h1>
+
+            <hr />
+
             <table className={s.listing}>
                 <thead>
                     <tr>
@@ -56,12 +56,19 @@ export default function PropertyListing({
             </table>
 
             <hr />
+
+            <Button
+                children='Add New'
+                onClick={() => onEditRequest(-1)}
+            />
         </>}
 
-        <Button
-            children='Add New'
-            onClick={() => onEditRequest(-1)}
-        />
+        {items.length === 0
+            && <Button
+                children='Add Property'
+                onClick={() => onEditRequest(-1)}
+                style={{marginTop: 200}}
+            />}
     </>
 }
 
