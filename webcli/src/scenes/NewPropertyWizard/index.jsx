@@ -87,33 +87,27 @@ export default function NewPropertyWizard({
                 ...propRec
             },
         }) => {
-            if (pm) {
-                let pmId =
-                    propManagers.find(pm_ =>
-                        pm_.name === pm.name && pm_.address === pm.address,
-                    )
-                        ?.id
-
-                if (!pmId)
-                    pmId = onManagerAdd('property_manager', pm)
-
-                propRec.property_manager_id = pmId
-            }
-
-            if (acc) {
-                let accId =
-                    accountants.find(acc_ =>
-                        acc_.name === acc.name && acc_.address === acc.address,
-                    )
-                        ?.id
-
-                if (!accId)
-                    accId = onManagerAdd('accountant', acc)
-
-                propRec.accountant_id = accId
-            }
-
             propRec.declaration_file = file
+
+            ;[
+                ['property_manager', pm, propManagers],
+                ['accountant', acc, accountants],
+            ]
+                .forEach(([managerType, managerRec, existingManagerList]) => {
+                    if (!managerRec)
+                        return
+
+                    const existingManagerId =
+                        existingManagerList.find(m =>
+                            m.name === managerRec.name
+                            && m.address === managerRec.address,
+                        )
+                            ?.id
+
+                    propRec[managerType + '_id'] =
+                        existingManagerId
+                        || onManagerAdd(managerType, managerRec)
+                })
 
             setPropState(propRec)
         }
