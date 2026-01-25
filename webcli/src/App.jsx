@@ -51,21 +51,82 @@ export default function App({
 
             if (editedPropertyIdx > -1) { // edit mode
                 try {
-                    await editProperty(propRec.id, serialized)
+                    const {
+                        id,
+                        property_manager_id,
+                        accountant_id,
+                    }
+                        = await editProperty(propRec.id, serialized)
+
+                    setProperties(prev =>
+                        updateCollectionItem(prev, editedPropertyIdx, {
+                            ...propRec,
+                            property_manager_id,
+                            accountant_id,
+                        }))
+
+                    if (propRec.property_manager_id >= 1e6) {
+                        const newPmIdx =
+                            propManagers_.findIndex(pm =>
+                                pm.id === propRec.property_manager_id)
+
+                        setPropManagers(prev =>
+                            updateCollectionItem(
+                                prev, newPmIdx, {id: property_manager_id}))
+                    }
+
+                    if (propRec.accountant_id >= 1e6) {
+                        const newAccIdx =
+                            accountants_.findIndex(acc =>
+                                acc.id === propRec.accountant_id)
+
+                        setAccountants(prev =>
+                            updateCollectionItem(
+                                prev, newAccIdx, {id: accountant_id}))
+                    }
+
                 } catch (e) {
                     return handleNetworkError(e)
                 }
-
-                setProperties(prev =>
-                    updateCollectionItem(prev, editedPropertyIdx, propRec))
 
                 setEditedPropertyIdx(-1)
 
             } else { // create mode
                 try {
-                    const id = await createProperty(serialized)
+                    const {
+                        id,
+                        property_manager_id,
+                        accountant_id,
+                    }
+                        = await createProperty(serialized)
 
-                    setProperties(prev => [...prev, {id, ...propRec}])
+                    setProperties(prev => [...prev, {
+                        ...propRec,
+                        id,
+                        property_manager_id,
+                        accountant_id,
+                    }])
+
+                    if (propRec.property_manager_id >= 1e6) {
+                        const newPmIdx =
+                            propManagers_.findIndex(pm =>
+                                pm.id === propRec.property_manager_id)
+
+                        setPropManagers(prev =>
+                            updateCollectionItem(
+                                prev, newPmIdx, {id: property_manager_id}))
+                    }
+
+                    if (propRec.accountant_id >= 1e6) {
+                        const newAccIdx =
+                            accountants_.findIndex(acc =>
+                                acc.id === propRec.accountant_id)
+
+                        setAccountants(prev =>
+                            updateCollectionItem(
+                                prev, newAccIdx, {id: accountant_id}))
+                    }
+
                 } catch (e) {
                     return handleNetworkError(e)
                 }
