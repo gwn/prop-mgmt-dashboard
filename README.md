@@ -23,15 +23,14 @@ summary of the tech stack and the reasons behind the choices.
 
 ## Setup
 
-    psql < schema.sql
-    cp env-example env
-    $EDITOR env # fill accordingly
-    npm run dev
+```bash
+psql < schema.sql
+cp env-example env
+$EDITOR env
+npm i
+npm run dev:be
+npm run dev:fe
+```
 
 Note that a Swagger API documentation is available, see backend
 logs for the URL.
-
-
-## Notes
-
-Tested in Google Chrome.
