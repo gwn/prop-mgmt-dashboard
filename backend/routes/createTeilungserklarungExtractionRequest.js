@@ -17,7 +17,6 @@ module.exports = {
             properties: {
                 pdfFile: {
                     type: 'object',
-                    format: 'binary',
                     description: 'A valid Teilungserklärung PDF file',
                 },
             },
