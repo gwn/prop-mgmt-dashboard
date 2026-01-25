@@ -55,7 +55,7 @@ export default function App({
                 try {
                     newPropRec = await editProperty(propRec.id, serialized)
                 } catch (e) {
-                    handleNetworkError(e)
+                    return handleNetworkError(e)
                 }
 
                 setProperties(prev =>
@@ -68,7 +68,7 @@ export default function App({
                 try {
                     newPropRec = await createProperty(serialized)
                 } catch (e) {
-                    handleNetworkError(e)
+                    return handleNetworkError(e)
                 }
 
                 setProperties(prev => [...prev, {
