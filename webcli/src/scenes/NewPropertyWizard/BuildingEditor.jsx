@@ -76,19 +76,23 @@ export default function BuildingEditor({
                 error={formErrors.name}
             /></li>
 
-            <li><Input
-                placeholder='Street'
-                value={buildingState.street}
-                onChange={val => updateBuilding({street: val})}
-                error={formErrors.street}
-            /></li>
+            <li>
+                <Input
+                    placeholder='Street'
+                    value={buildingState.street}
+                    onChange={val => updateBuilding({street: val})}
+                    error={formErrors.street}
+                    style={{width: 250}}
+                />
 
-            <li><Input
-                placeholder='House Number'
-                value={buildingState.house_number}
-                onChange={val => updateBuilding({house_number: val})}
-                error={formErrors.house_number}
-            /></li>
+                <Input
+                    placeholder='No'
+                    value={buildingState.house_number}
+                    onChange={val => updateBuilding({house_number: val})}
+                    error={formErrors.house_number}
+                    style={{width: 60}}
+                />
+            </li>
 
             <li><Input
                 placeholder='Construction Year'
