@@ -2,13 +2,16 @@
 
 ## Project Info
 
-This is a simple property management dashboard designed for
-efficiency.
+Simple property management dashboard designed for efficiency.
 
 [Check out the demo
 here](https://www.loom.com/share/7db8585a6fa649beb4bbbd3188b25749)
 
-See the requirement and technical specs under the `meta` folder.
+See [the requirement specification](meta/reqspec.md) for the
+original project requirements.
+
+See [the technical specification](meta/techspec.md) for the
+summary of the tech stack and the reasons behind the choices.
 
 
 ## Dependencies
