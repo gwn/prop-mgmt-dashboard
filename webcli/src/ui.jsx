@@ -172,29 +172,29 @@ const
         },
         ref,
     ) =>
-            <select
-                ref={ref}
-                value={value}
-                onChange={e => onChange(e.target.value)}
-                className={
-                    s.select + ' ' + (error ? s.error : '') + ' ' + className}
-                title={error}
-                {...props}
-            >
-                <option
-                    value=''
-                    children={placeholder}
-                    disabled
-                    hidden
-                />
+        <select
+            ref={ref}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className={
+                s.select + ' ' + (error ? s.error : '') + ' ' + className}
+            title={error}
+            {...props}
+        >
+            <option
+                value=''
+                children={placeholder}
+                disabled
+                hidden
+            />
 
-                {Object.entries(opts).map(([title, val]) =>
-                    <option
-                        key={title}
-                        value={val}
-                        children={title}
-                    />)}
-            </select>
+            {Object.entries(opts).map(([title, val]) =>
+                <option
+                    key={title}
+                    value={val}
+                    children={title}
+                />)}
+        </select>,
     ),
 
 
