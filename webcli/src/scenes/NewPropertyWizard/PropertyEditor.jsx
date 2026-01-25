@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useRef} from 'react'
 import {extractPropertyDeclarationPdf} from '@/api'
 import {useModal} from '@/context'
 import {mapKeys, validateFormData} from '@/util'
@@ -25,6 +25,8 @@ export default function PropertyEditor({
 }) {
     const
         setModalScene = useModal(),
+        propManagerInputRef = useRef(),
+        accountantInputRef = useRef(),
 
         [formErrors, setFormErrors] = useState({}),
 
@@ -68,12 +70,16 @@ export default function PropertyEditor({
                         ? 'Accountant'
                         : 'Property Manager'),
 
-                onCancel: () => setModalScene(null),
+                onCancel: () => {
+                    setModalScene(null)
+                    propManagerInputRef.current?.focus()
+                },
 
                 onSubmit: managerRec => {
                     const id = onManagerAdd(managerType, managerRec)
                     onChange({[managerType + '_id']: id})
                     setModalScene(null)
+                    accountantInputRef.current?.focus()
                 },
             }),
 
@@ -143,6 +149,7 @@ export default function PropertyEditor({
 
             <li>
                 <Select
+                    ref={propManagerInputRef}
                     placeholder='Property Manager'
                     value={value.property_manager_id}
                     error={formErrors.property_manager_id}
@@ -159,6 +166,7 @@ export default function PropertyEditor({
 
             <li>
                 <Select
+                    ref={accountantInputRef}
                     placeholder='Accountant'
                     value={value.accountant_id}
                     error={formErrors.accountant_id}

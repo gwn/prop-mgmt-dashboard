@@ -160,37 +160,42 @@ const
     ),
 
 
-    Select = ({
-        placeholder = '',
-        opts,
-        value,
-        onChange,
-        className = '',
-        error,
-        ...props
-    }) =>
-        <select
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            className={
-                s.select + ' ' + (error ? s.error : '') + ' ' + className}
-            title={error}
-            {...props}
-        >
-            <option
-                value=''
-                children={placeholder}
-                disabled
-                hidden
-            />
-
-            {Object.entries(opts).map(([title, val]) =>
+    Select = forwardRef((
+        {
+            placeholder = '',
+            opts,
+            value,
+            onChange,
+            className = '',
+            error,
+            ...props
+        },
+        ref,
+    ) =>
+            <select
+                ref={ref}
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                className={
+                    s.select + ' ' + (error ? s.error : '') + ' ' + className}
+                title={error}
+                {...props}
+            >
                 <option
-                    key={title}
-                    value={val}
-                    children={title}
-                />)}
-        </select>,
+                    value=''
+                    children={placeholder}
+                    disabled
+                    hidden
+                />
+
+                {Object.entries(opts).map(([title, val]) =>
+                    <option
+                        key={title}
+                        value={val}
+                        children={title}
+                    />)}
+            </select>
+    ),
 
 
     Modal = ({
