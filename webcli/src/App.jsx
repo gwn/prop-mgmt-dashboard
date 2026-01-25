@@ -60,7 +60,7 @@ export default function App({
 
                 setProperties(prev =>
                     updateCollectionItem(
-                        prev, editedPropertyIdx, newPropRec))
+                        prev, editedPropertyIdx, {...propRec, ...newPropRec}))
 
                 setEditedPropertyIdx(-1)
 
