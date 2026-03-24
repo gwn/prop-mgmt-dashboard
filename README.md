@@ -34,7 +34,6 @@ Project setup:
 psql < schema.sql
 cp env-example env
 $EDITOR env
-nvm use
 npm i
 npm run dev:be
 npm run dev:fe
